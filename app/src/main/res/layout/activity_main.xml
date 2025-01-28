@@ -11,17 +11,19 @@
     tools:layout_editor_absoluteY="0dp">
 
     <LinearLayout
-        android:layout_width="412dp"
+        android:id="@+id/linearLayout23"
+        android:layout_width="0dp"
         android:layout_height="86dp"
         android:background="#3F8AF0"
         android:orientation="vertical"
-        tools:layout_editor_absoluteX="0dp"
-        tools:layout_editor_absoluteY="0dp">
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
 
         <TextView
             android:id="@+id/textView3"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:text="Grávida Digital"
             android:textAlignment="center"
             android:textColor="#FFFFFF"
@@ -35,60 +37,71 @@
         android:id="@+id/button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginEnd="92dp"
         android:text="Entrar"
-        tools:layout_editor_absoluteX="231dp"
-        tools:layout_editor_absoluteY="482dp" />
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/checkBox" />
 
     <EditText
         android:id="@+id/editTextText2"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginTop="26dp"
         android:ems="10"
         android:inputType="text"
         android:text="Senha"
-        tools:layout_editor_absoluteX="72dp"
-        tools:layout_editor_absoluteY="237dp" />
+        app:layout_constraintStart_toStartOf="@+id/editTextText"
+        app:layout_constraintTop_toBottomOf="@+id/editTextText" />
 
     <Button
         android:id="@+id/button3"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginStart="13dp"
         android:text="Criar conta"
-        tools:layout_editor_absoluteX="45dp"
-        tools:layout_editor_absoluteY="482dp" />
+        app:layout_constraintStart_toStartOf="@+id/checkBox"
+        app:layout_constraintTop_toBottomOf="@+id/checkBox" />
 
     <EditText
         android:id="@+id/editTextText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginStart="72dp"
+        android:layout_marginTop="166dp"
         android:ems="10"
         android:inputType="text"
         android:text="Email"
-        tools:layout_editor_absoluteX="72dp"
-        tools:layout_editor_absoluteY="166dp" />
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
         android:id="@+id/textView4"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginTop="7dp"
         android:text="Esqueci a senha"
-        tools:layout_editor_absoluteX="72dp"
-        tools:layout_editor_absoluteY="289dp" />
+        app:layout_constraintStart_toStartOf="@+id/editTextText2"
+        app:layout_constraintTop_toBottomOf="@+id/editTextText2" />
 
     <TextView
         android:id="@+id/textView5"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
         android:text="Leia os termos abaixo:"
-        tools:layout_editor_absoluteX="32dp"
-        tools:layout_editor_absoluteY="345dp" />
+        app:layout_constraintStart_toStartOf="@+id/checkBox"
+        app:layout_constraintTop_toTopOf="@+id/checkBox" />
 
     <CheckBox
         android:id="@+id/checkBox"
         android:layout_width="235dp"
         android:layout_height="147dp"
+        android:layout_marginStart="32dp"
+        android:layout_marginTop="249dp"
+        android:layout_marginBottom="249dp"
         android:text="Aceito que tirem fotos minhas enquanto respondo as perguntas. "
-        tools:layout_editor_absoluteX="32dp"
-        tools:layout_editor_absoluteY="335dp" />
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/linearLayout23" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

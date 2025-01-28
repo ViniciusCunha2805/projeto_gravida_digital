@@ -429,8 +429,24 @@
                                         android:layout_width="match_parent"
                                         android:layout_height="match_parent"
                                         tools:context=".FourthActivity"
-                                        tools:layout_editor_absoluteX="0dp"
-                                        tools:layout_editor_absoluteY="0dp">
+                                        tools:layout_editor_absoluteX="16dp"
+                                        tools:layout_editor_absoluteY="-137dp">
+
+                                        <CheckBox
+                                            android:id="@+id/checkBox2"
+                                            android:layout_width="321dp"
+                                            android:layout_height="162dp"
+                                            android:text="Aceito que minhas fotos sejam enviadas juntamente com minhas respostas e dados pessoais."
+                                            tools:layout_editor_absoluteX="25dp"
+                                            tools:layout_editor_absoluteY="196dp" />
+
+                                        <TextView
+                                            android:id="@+id/textView116"
+                                            android:layout_width="wrap_content"
+                                            android:layout_height="wrap_content"
+                                            android:text="Leia os termos abaixo:"
+                                            tools:layout_editor_absoluteX="25dp"
+                                            tools:layout_editor_absoluteY="213dp" />
 
                                         <TextView
                                             android:id="@+id/textView11"
@@ -472,15 +488,6 @@
                                             android:textColor="#FFFFFF"
                                             android:textColorLink="#FFFFFF"
                                             android:textSize="24sp" />
-
-                                        <TextView
-                                            android:id="@+id/textView13"
-                                            android:layout_width="306dp"
-                                            android:layout_height="89dp"
-                                            android:text="Revise as fotos tiradas durante o questionário e apague aquelas que desejar."
-                                            android:textSize="20sp"
-                                            tools:layout_editor_absoluteX="39dp"
-                                            tools:layout_editor_absoluteY="169dp" />
 
                                         <LinearLayout
                                             android:layout_width="412dp"

@@ -9,14 +9,17 @@
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/main"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
         android:textAlignment="center"
-        tools:context=".MainActivity"
-        tools:layout_editor_absoluteX="16dp"
-        tools:layout_editor_absoluteY="171dp">
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:context=".MainActivity">
 
         <LinearLayout
+            android:id="@+id/linearLayout25"
             android:layout_width="412dp"
             android:layout_height="86dp"
             android:background="#3F8AF0"
@@ -63,16 +66,6 @@
             tools:layout_editor_absoluteY="250dp" />
 
         <EditText
-            android:id="@+id/editTextText5"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:ems="10"
-            android:inputType="text"
-            android:text="Senha"
-            tools:layout_editor_absoluteX="46dp"
-            tools:layout_editor_absoluteY="305dp" />
-
-        <EditText
             android:id="@+id/editTextText4"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -88,31 +81,44 @@
             android:layout_height="wrap_content"
             android:ems="10"
             android:inputType="text"
-            android:text="Confirmar senha"
+            android:text="Confirme a senha"
             tools:layout_editor_absoluteX="46dp"
             tools:layout_editor_absoluteY="368dp" />
+
+        <EditText
+            android:id="@+id/editTextText5"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:ems="10"
+            android:inputType="text"
+            android:text="Crie uma senha"
+            tools:layout_editor_absoluteX="46dp"
+            tools:layout_editor_absoluteY="312dp" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
     <TextView
         android:id="@+id/textView"
-        android:layout_width="match_parent"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:text="Grávida Digital"
         android:textAlignment="center"
         android:textColor="#FFFFFF"
         android:textColorLink="#FFFFFF"
         android:textSize="24sp"
-        tools:layout_editor_absoluteX="0dp"
-        tools:layout_editor_absoluteY="0dp" />
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/main" />
 
     <LinearLayout
-        android:layout_width="412dp"
+        android:id="@+id/linearLayout24"
+        android:layout_width="0dp"
         android:layout_height="86dp"
         android:background="#3F8AF0"
         android:orientation="vertical"
-        tools:layout_editor_absoluteX="1dp"
-        tools:layout_editor_absoluteY="0dp">
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/main">
 
         <TextView
             android:id="@+id/textView3"
