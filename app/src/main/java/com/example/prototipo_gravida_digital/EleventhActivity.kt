@@ -1,6 +1,8 @@
 package com.example.prototipo_gravida_digital
 
+import android.content.Intent
 import android.os.Bundle
+import android.widget.Button
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
@@ -16,5 +18,11 @@ class EleventhActivity : AppCompatActivity() {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
             insets
         }
+
+        /* val button17: Button = findViewById(R.id.btFinalizar)
+        button17.setOnClickListener {
+            val intent = Intent(this, NinthActivity::class.java)
+            startActivity(intent)
+        }*/
     }
 }

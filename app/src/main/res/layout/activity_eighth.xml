@@ -7,406 +7,122 @@
     android:layout_height="match_parent"
     tools:context=".EighthActivity">
 
-    <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/main"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        tools:context=".FourthActivity">
-
-        <androidx.constraintlayout.widget.ConstraintLayout
-            android:id="@+id/main"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            tools:context=".ThirdActivity"
-            tools:layout_editor_absoluteX="0dp"
-            tools:layout_editor_absoluteY="0dp">
-
-            <Button
-                android:id="@+id/button4"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Próxima"
-                tools:layout_editor_absoluteX="245dp"
-                tools:layout_editor_absoluteY="379dp" />
-
-            <LinearLayout
-                android:layout_width="412dp"
-                android:layout_height="86dp"
-                android:background="#3F8AF0"
-                android:orientation="vertical"
-                tools:layout_editor_absoluteX="1dp"
-                tools:layout_editor_absoluteY="-1dp">
-
-                <TextView
-                    android:id="@+id/textView17"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="Grávida Digital"
-                    android:textAlignment="center"
-                    android:textColor="#FFFFFF"
-                    android:textColorLink="#FFFFFF"
-                    android:textSize="24sp" />
-            </LinearLayout>
-
-            <TextView
-                android:id="@+id/textView2"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="Grávida Digital"
-                android:textAlignment="center"
-                android:textColor="#FFFFFF"
-                android:textColorLink="#FFFFFF"
-                android:textSize="24sp" />
-
-            <TextView
-                android:id="@+id/textView6"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Pergunta 6"
-                android:textSize="34sp"
-                tools:layout_editor_absoluteX="16dp"
-                tools:layout_editor_absoluteY="110dp" />
-
-            <TextView
-                android:id="@+id/textView7"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="Grávida Digital"
-                android:textAlignment="center"
-                android:textColor="#FFFFFF"
-                android:textColorLink="#FFFFFF"
-                android:textSize="24sp"
-                tools:layout_editor_absoluteX="0dp"
-                tools:layout_editor_absoluteY="0dp" />
-
-            <LinearLayout
-                android:layout_width="412dp"
-                android:layout_height="86dp"
-                android:background="#3F8AF0"
-                android:orientation="vertical"
-                tools:layout_editor_absoluteX="1dp"
-                tools:layout_editor_absoluteY="0dp" />
-
-            <TextView
-                android:id="@+id/textView9"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="Grávida Digital"
-                android:textAlignment="center"
-                android:textColor="#FFFFFF"
-                android:textColorLink="#FFFFFF"
-                android:textSize="24sp" />
-
-            <Button
-                android:id="@+id/button2"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Anterior"
-                tools:layout_editor_absoluteX="57dp"
-                tools:layout_editor_absoluteY="379dp" />
-
-        </androidx.constraintlayout.widget.ConstraintLayout>
-
-        <TextView
-            android:id="@+id/textView11"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Grávida Digital"
-            android:textAlignment="center"
-            android:textColor="#FFFFFF"
-            android:textColorLink="#FFFFFF"
-            android:textSize="24sp"
-            tools:layout_editor_absoluteX="0dp"
-            tools:layout_editor_absoluteY="0dp" />
-
-        <LinearLayout
-            android:layout_width="412dp"
-            android:layout_height="86dp"
-            android:background="#3F8AF0"
-            android:orientation="vertical"
-            tools:layout_editor_absoluteX="1dp"
-            tools:layout_editor_absoluteY="0dp">
-
-            <TextView
-                android:id="@+id/textView3"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="Grávida Digital"
-                android:textAlignment="center"
-                android:textColor="#FFFFFF"
-                android:textColorLink="#FFFFFF"
-                android:textSize="24sp" />
-        </LinearLayout>
-
-        <TextView
-            android:id="@+id/textView12"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Grávida Digital"
-            android:textAlignment="center"
-            android:textColor="#FFFFFF"
-            android:textColorLink="#FFFFFF"
-            android:textSize="24sp" />
-
-        <TextView
-            android:id="@+id/textView13"
-            android:layout_width="280dp"
-            android:layout_height="46dp"
-            android:text="Sentiu-se mal consigo mesmo ou que falhou?"
-            android:textSize="20sp"
-            tools:layout_editor_absoluteX="50dp"
-            tools:layout_editor_absoluteY="176dp" />
-
-        <SeekBar
-            android:id="@+id/seekBar2"
-            style="@style/Widget.AppCompat.SeekBar.Discrete"
-            android:layout_width="361dp"
-            android:layout_height="52dp"
-            android:max="3"
-            android:progress="1"
-            tools:layout_editor_absoluteX="25dp"
-            tools:layout_editor_absoluteY="257dp" />
-
-        <LinearLayout
-            android:layout_width="412dp"
-            android:layout_height="86dp"
-            android:background="#3F8AF0"
-            android:orientation="vertical"
-            tools:layout_editor_absoluteX="1dp"
-            tools:layout_editor_absoluteY="-1dp">
-
-            <TextView
-                android:id="@+id/textView3"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="Grávida Digital"
-                android:textAlignment="center"
-                android:textColor="#FFFFFF"
-                android:textColorLink="#FFFFFF"
-                android:textSize="24sp" />
-        </LinearLayout>
-
-        <TextView
-            android:id="@+id/textView14"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Grávida Digital"
-            android:textAlignment="center"
-            android:textColor="#FFFFFF"
-            android:textColorLink="#FFFFFF"
-            android:textSize="24sp" />
-
-        <TextView
-            android:id="@+id/textView15"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Grávida Digital"
-            android:textAlignment="center"
-            android:textColor="#FFFFFF"
-            android:textColorLink="#FFFFFF"
-            android:textSize="24sp" />
-
-    </androidx.constraintlayout.widget.ConstraintLayout>
+    <TextView
+        android:id="@+id/textView13"
+        android:layout_width="279dp"
+        android:layout_height="57dp"
+        android:layout_marginStart="25dp"
+        android:layout_marginTop="66dp"
+        android:layout_marginEnd="26dp"
+        android:layout_marginBottom="69dp"
+        android:text="Sentiu-se mal consigo mesmo ou que falhou?"
+        android:textSize="20sp"
+        app:layout_constraintBottom_toTopOf="@+id/textView31"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.275"
+        app:layout_constraintStart_toStartOf="@+id/seekBar13"
+        app:layout_constraintTop_toTopOf="@+id/textView6"
+        app:layout_constraintVertical_bias="0.0" />
 
     <Button
-        android:id="@+id/button14"
+        android:id="@+id/btProxima6"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginTop="29dp"
+        android:layout_marginEnd="18dp"
         android:text="Próxima"
-        tools:layout_editor_absoluteX="245dp"
-        tools:layout_editor_absoluteY="379dp" />
-
-    <LinearLayout
-        android:layout_width="412dp"
-        android:layout_height="86dp"
-        android:background="#3F8AF0"
-        android:orientation="vertical"
-        tools:layout_editor_absoluteX="1dp"
-        tools:layout_editor_absoluteY="-1dp">
-
-        <TextView
-            android:id="@+id/textView17"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Grávida Digital"
-            android:textAlignment="center"
-            android:textColor="#FFFFFF"
-            android:textColorLink="#FFFFFF"
-            android:textSize="24sp" />
-    </LinearLayout>
+        app:layout_constraintEnd_toStartOf="@+id/textView31"
+        app:layout_constraintTop_toBottomOf="@+id/textView30" />
 
     <TextView
-        android:id="@+id/textView42"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Grávida Digital"
-        android:textAlignment="center"
-        android:textColor="#FFFFFF"
-        android:textColorLink="#FFFFFF"
-        android:textSize="24sp" />
-
-    <TextView
-        android:id="@+id/textView52"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Grávida Digital"
-        android:textAlignment="center"
-        android:textColor="#FFFFFF"
-        android:textColorLink="#FFFFFF"
-        android:textSize="24sp" />
-
-    <TextView
-        android:id="@+id/textView77"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Grávida Digital"
-        android:textAlignment="center"
-        android:textColor="#FFFFFF"
-        android:textColorLink="#FFFFFF"
-        android:textSize="24sp"
-        tools:layout_editor_absoluteX="0dp"
-        tools:layout_editor_absoluteY="0dp" />
-
-    <LinearLayout
-        android:layout_width="412dp"
-        android:layout_height="86dp"
-        android:background="#3F8AF0"
-        android:orientation="vertical"
-        tools:layout_editor_absoluteX="1dp"
-        tools:layout_editor_absoluteY="0dp" />
-
-    <TextView
-        android:id="@+id/textView78"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Grávida Digital"
-        android:textAlignment="center"
-        android:textColor="#FFFFFF"
-        android:textColorLink="#FFFFFF"
-        android:textSize="24sp" />
-
-    <Button
-        android:id="@+id/button15"
+        android:id="@+id/textView30"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Anterior"
-        tools:layout_editor_absoluteX="57dp"
-        tools:layout_editor_absoluteY="379dp" />
-
-    <TextView
-        android:id="@+id/textView79"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Grávida Digital"
-        android:textAlignment="center"
-        android:textColor="#FFFFFF"
-        android:textColorLink="#FFFFFF"
-        android:textSize="24sp"
-        tools:layout_editor_absoluteX="0dp"
-        tools:layout_editor_absoluteY="0dp" />
-
-    <LinearLayout
-        android:layout_width="412dp"
-        android:layout_height="86dp"
-        android:background="#3F8AF0"
-        android:orientation="vertical"
-        tools:layout_editor_absoluteX="1dp"
-        tools:layout_editor_absoluteY="0dp">
-
-        <TextView
-            android:id="@+id/textView3"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Grávida Digital"
-            android:textAlignment="center"
-            android:textColor="#FFFFFF"
-            android:textColorLink="#FFFFFF"
-            android:textSize="24sp" />
-    </LinearLayout>
-
-    <TextView
-        android:id="@+id/textView80"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Grávida Digital"
-        android:textAlignment="center"
-        android:textColor="#FFFFFF"
-        android:textColorLink="#FFFFFF"
-        android:textSize="24sp" />
-
-    <TextView
-        android:id="@+id/textView81"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Grávida Digital"
-        android:textAlignment="center"
-        android:textColor="#FFFFFF"
-        android:textColorLink="#FFFFFF"
-        android:textSize="24sp" />
-
-    <SeekBar
-        android:id="@+id/seekBar6"
-        style="@style/Widget.AppCompat.SeekBar.Discrete"
-        android:layout_width="361dp"
-        android:layout_height="52dp"
-        android:max="3"
-        android:progress="1"
-        tools:layout_editor_absoluteX="25dp"
-        tools:layout_editor_absoluteY="257dp" />
-
-    <TextView
-        android:id="@+id/textView153"
-        android:layout_width="49dp"
-        android:layout_height="37dp"
-        android:text="0"
-        android:textSize="20sp"
-        tools:layout_editor_absoluteX="33dp"
-        tools:layout_editor_absoluteY="292dp" />
-
-    <TextView
-        android:id="@+id/textView154"
-        android:layout_width="49dp"
-        android:layout_height="37dp"
-        android:text="3"
-        android:textSize="20sp"
-        tools:layout_editor_absoluteX="362dp"
-        tools:layout_editor_absoluteY="292dp" />
-
-    <TextView
-        android:id="@+id/textView155"
-        android:layout_width="49dp"
-        android:layout_height="37dp"
+        android:layout_marginStart="11dp"
+        android:layout_marginTop="3dp"
         android:text="2"
         android:textSize="20sp"
-        tools:layout_editor_absoluteX="252dp"
-        tools:layout_editor_absoluteY="292dp" />
+        app:layout_constraintStart_toStartOf="@+id/btProxima6"
+        app:layout_constraintTop_toBottomOf="@+id/seekBar13" />
+
+    <Button
+        android:id="@+id/btAnterior5"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="7dp"
+        android:layout_marginTop="29dp"
+        android:text="Anterior"
+        app:layout_constraintStart_toEndOf="@+id/textView28"
+        app:layout_constraintTop_toBottomOf="@+id/textView29" />
+
+    <TextView
+        android:id="@+id/textView29"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="3dp"
+        android:text="1"
+        android:textSize="20sp"
+        app:layout_constraintEnd_toEndOf="@+id/btAnterior5"
+        app:layout_constraintTop_toBottomOf="@+id/seekBar13" />
+
+    <TextView
+        android:id="@+id/textView31"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="312dp"
+        android:layout_marginEnd="11dp"
+        android:text="3"
+        android:textSize="20sp"
+        app:layout_constraintEnd_toEndOf="@+id/seekBar13"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/textView28"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="14dp"
+        android:layout_marginTop="3dp"
+        android:text="0"
+        android:textSize="20sp"
+        app:layout_constraintStart_toStartOf="@+id/seekBar13"
+        app:layout_constraintTop_toBottomOf="@+id/seekBar13" />
+
+    <TextView
+        android:id="@+id/textView6"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="24dp"
+        android:text="Pergunta 6"
+        android:textSize="34sp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/linearLayout30" />
 
     <SeekBar
         android:id="@+id/seekBar13"
         style="@style/Widget.AppCompat.SeekBar.Discrete"
-        android:layout_width="361dp"
-        android:layout_height="52dp"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginStart="25dp"
+        android:layout_marginTop="14dp"
+        android:layout_marginEnd="25dp"
+        android:layout_marginBottom="3dp"
         android:max="3"
         android:progress="1"
-        tools:layout_editor_absoluteX="25dp"
-        tools:layout_editor_absoluteY="257dp" />
-
-    <TextView
-        android:id="@+id/textView156"
-        android:layout_width="49dp"
-        android:layout_height="37dp"
-        android:text="1"
-        android:textSize="20sp"
-        tools:layout_editor_absoluteX="140dp"
-        tools:layout_editor_absoluteY="292dp" />
+        app:layout_constraintBottom_toTopOf="@+id/textView31"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textView13" />
 
     <LinearLayout
-        android:layout_width="412dp"
+        android:id="@+id/linearLayout30"
+        android:layout_width="0dp"
         android:layout_height="86dp"
         android:background="#3F8AF0"
         android:orientation="vertical"
-        tools:layout_editor_absoluteX="1dp"
-        tools:layout_editor_absoluteY="-1dp">
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
 
         <TextView
             android:id="@+id/textView3"
@@ -419,33 +135,4 @@
             android:textSize="24sp" />
     </LinearLayout>
 
-    <TextView
-        android:id="@+id/textView83"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Grávida Digital"
-        android:textAlignment="center"
-        android:textColor="#FFFFFF"
-        android:textColorLink="#FFFFFF"
-        android:textSize="24sp" />
-
-    <TextView
-        android:id="@+id/textView84"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Grávida Digital"
-        android:textAlignment="center"
-        android:textColor="#FFFFFF"
-        android:textColorLink="#FFFFFF"
-        android:textSize="24sp" />
-
-    <TextView
-        android:id="@+id/textView85"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Grávida Digital"
-        android:textAlignment="center"
-        android:textColor="#FFFFFF"
-        android:textColorLink="#FFFFFF"
-        android:textSize="24sp" />
 </androidx.constraintlayout.widget.ConstraintLayout>
