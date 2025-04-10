@@ -19,7 +19,7 @@ class MainActivity : AppCompatActivity() {
             insets
         }
 
-        val button1: Button = findViewById(R.id.btCadastro)
+        val button1: Button = findViewById(R.id.btCadastrar)
         button1.setOnClickListener {
             val intent = Intent(this, SecondActivity::class.java)
             startActivity(intent)

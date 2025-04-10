@@ -1,12 +1,12 @@
 package com.example.prototipo_gravida_digital
 
-import android.content.Intent
 import android.os.Bundle
-import android.widget.Button
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import android.content.Intent
+import android.widget.Button
 
 class TenthActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
