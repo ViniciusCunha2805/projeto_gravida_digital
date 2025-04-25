@@ -124,4 +124,12 @@
         android:text="Próxima"
         app:layout_constraintEnd_toEndOf="@+id/textView136"
         app:layout_constraintTop_toBottomOf="@+id/textView136" />
+
+    <ImageView
+        android:id="@+id/debugImageView"
+        android:layout_width="match_parent"
+        android:layout_height="300dp"
+        android:visibility="gone"
+        android:scaleType="centerCrop"
+        android:layout_gravity="center" />
 </androidx.constraintlayout.widget.ConstraintLayout>
