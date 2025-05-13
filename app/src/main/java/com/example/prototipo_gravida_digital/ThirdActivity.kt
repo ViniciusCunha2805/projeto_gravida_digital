@@ -91,18 +91,18 @@ class ThirdActivity : AppCompatActivity() {
 
     private fun takeThreePhotos() {
         val handler = Handler(Looper.getMainLooper())
-        val interval = 2000L
+        val interval = 3000L
 
         repeat(3) { index ->
             handler.postDelayed({
-                takeSilentPhoto("selfie_${index + 1}")
+                takeSilentPhoto("selfie_third_${index + 1}")
             }, interval * index)
         }
     }
 
     private fun takeSilentPhoto(tag: String) {
         try {
-            val dir = File(getExternalFilesDir(null), "Pictures/SelfieTest")
+            val dir = File(getExternalFilesDir(null), "Pictures/SelfieThird")
             if (!dir.exists()) dir.mkdirs()
 
             val fileName = "$tag-${System.currentTimeMillis()}.jpg"
