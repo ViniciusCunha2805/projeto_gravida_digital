@@ -1,28 +1,41 @@
 package com.example.prototipo_gravida_digital
 
 import android.os.Bundle
-import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
 import android.content.Intent
 import android.widget.Button
+import android.widget.CheckBox
+import android.widget.Toast
 
 class EleventhActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
         setContentView(R.layout.activity_eleventh)
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
-            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
-            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
-            insets
+
+        val checkTermos = findViewById<CheckBox>(R.id.checkTermos2)
+        val buttonFinalizar = findViewById<Button>(R.id.btFinalizar)
+
+        checkTermos.setOnCheckedChangeListener { _, isChecked ->
+            buttonFinalizar.isEnabled = isChecked
         }
 
-        /* val button17: Button = findViewById(R.id.btFinalizar)
-        button17.setOnClickListener {
-            val intent = Intent(this, NinthActivity::class.java)
-            startActivity(intent)
-        }*/
+        buttonFinalizar.setOnClickListener {
+            if (checkTermos.isChecked) {
+                enviarDadosParaBanco()
+            } else {
+                Toast.makeText(
+                    this,
+                    "Por favor, aceite os termos para continuar",
+                    Toast.LENGTH_LONG
+                ).show()
+            }
+        }
+    }
+
+    private fun enviarDadosParaBanco() {
+        Toast.makeText(this, "Dados enviados com sucesso!", Toast.LENGTH_SHORT).show()
+        val intent = Intent(this, ConfirmationActivity::class.java)
+        startActivity(intent)
+        finish()
     }
 }

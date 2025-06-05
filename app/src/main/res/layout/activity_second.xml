@@ -37,12 +37,12 @@
         android:layout_marginBottom="25dp"
         android:text="Cadastro"
         android:textSize="34sp"
-        app:layout_constraintBottom_toTopOf="@+id/editTextText3"
+        app:layout_constraintBottom_toTopOf="@+id/editNome"
         app:layout_constraintStart_toStartOf="@+id/linearLayout6"
         app:layout_constraintTop_toBottomOf="@+id/linearLayout6" />
 
     <EditText
-        android:id="@+id/editTextText3"
+        android:id="@+id/editNome"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="30dp"
@@ -50,36 +50,36 @@
         android:ems="10"
         android:inputType="text"
         android:text="Nome completo"
-        app:layout_constraintBottom_toTopOf="@+id/editTextText4"
+        app:layout_constraintBottom_toTopOf="@+id/editEmail"
         app:layout_constraintStart_toStartOf="@+id/textView11"
         app:layout_constraintTop_toBottomOf="@+id/textView11" />
 
     <EditText
-        android:id="@+id/editTextText4"
+        android:id="@+id/editEmail"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom="19dp"
         android:ems="10"
         android:inputType="text"
         android:text="Email"
-        app:layout_constraintBottom_toTopOf="@+id/editTextText5"
-        app:layout_constraintStart_toStartOf="@+id/editTextText3"
-        app:layout_constraintTop_toBottomOf="@+id/editTextText3" />
+        app:layout_constraintBottom_toTopOf="@+id/editSenha"
+        app:layout_constraintStart_toStartOf="@+id/editNome"
+        app:layout_constraintTop_toBottomOf="@+id/editNome" />
 
     <EditText
-        android:id="@+id/editTextText5"
+        android:id="@+id/editSenha"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom="17dp"
         android:ems="10"
         android:inputType="text"
         android:text="Crie uma senha"
-        app:layout_constraintBottom_toTopOf="@+id/editTextText6"
-        app:layout_constraintStart_toStartOf="@+id/editTextText4"
-        app:layout_constraintTop_toBottomOf="@+id/editTextText4" />
+        app:layout_constraintBottom_toTopOf="@+id/editConfirmaSenha"
+        app:layout_constraintStart_toStartOf="@+id/editEmail"
+        app:layout_constraintTop_toBottomOf="@+id/editEmail" />
 
     <EditText
-        android:id="@+id/editTextText6"
+        android:id="@+id/editConfirmaSenha"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom="31dp"
@@ -87,8 +87,8 @@
         android:inputType="text"
         android:text="Confirme a senha"
         app:layout_constraintBottom_toTopOf="@+id/btCadastrar2"
-        app:layout_constraintStart_toStartOf="@+id/editTextText5"
-        app:layout_constraintTop_toBottomOf="@+id/editTextText5" />
+        app:layout_constraintStart_toStartOf="@+id/editSenha"
+        app:layout_constraintTop_toBottomOf="@+id/editSenha" />
 
     <Button
         android:id="@+id/btCadastrar2"
@@ -99,5 +99,5 @@
         android:text="Cadastrar"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/editTextText6" />
+        app:layout_constraintTop_toBottomOf="@+id/editConfirmaSenha" />
 </androidx.constraintlayout.widget.ConstraintLayout>

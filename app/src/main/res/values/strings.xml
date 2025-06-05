@@ -1,3 +1,9 @@
 <resources>
     <string name="app_name">prototipo_gravida_digital</string>
+    <string name="titulo_gravida_digital">Grávida Digital</string>
+    <string name="subtitulo_finalizacao">Finalização</string>
+    <string name="termos_titulo">Leia os termos abaixo:</string>
+    <string name="termos_aceite">Aceito que minhas fotos sejam enviadas juntamente com minhas respostas e dados pessoais.</string>
+    <string name="botao_finalizar">Finalizar</string>
+    <string name="mensagem_aceite_termos">Por favor, aceite os termos para continuar</string>
 </resources>

@@ -8,6 +8,17 @@
     tools:context=".SeventhActivity">
 
     <TextView
+        android:id="@+id/textView14"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="100dp"
+        android:layout_marginTop="12dp"
+        android:text="2"
+        android:textSize="20sp"
+        app:layout_constraintStart_toStartOf="@+id/btProxima5"
+        app:layout_constraintTop_toBottomOf="@+id/seekBarResposta5" />
+
+    <TextView
         android:id="@+id/textView448"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -23,7 +34,7 @@
         android:layout_width="0dp"
         android:layout_height="56dp"
         android:layout_marginStart="64dp"
-        android:layout_marginTop="20dp"
+        android:layout_marginTop="21dp"
         android:layout_marginEnd="64dp"
         android:text="Falta de apetite ou comer em excesso?"
         android:textSize="20sp"
@@ -59,78 +70,59 @@
         android:id="@+id/btProxima5"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="19dp"
-        android:layout_marginEnd="69dp"
+        android:layout_marginStart="7dp"
+        android:layout_marginTop="20dp"
         android:text="Próxima"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textView24" />
+        app:layout_constraintStart_toEndOf="@+id/textView12"
+        app:layout_constraintTop_toBottomOf="@+id/textView14" />
 
     <TextView
         android:id="@+id/textView18"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="7dp"
-        android:layout_marginTop="90dp"
+        android:layout_marginTop="13dp"
         android:text="0"
         android:textSize="20sp"
-        app:layout_constraintStart_toStartOf="@+id/seekBar"
-        app:layout_constraintTop_toBottomOf="@+id/textView13" />
-
-    <Button
-        android:id="@+id/btAnterior4"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="13dp"
-        android:layout_marginTop="20dp"
-        android:text="Anterior"
-        app:layout_constraintStart_toEndOf="@+id/textView18"
-        app:layout_constraintTop_toBottomOf="@+id/textView19" />
+        app:layout_constraintStart_toStartOf="@+id/seekBarResposta5"
+        app:layout_constraintTop_toBottomOf="@+id/seekBarResposta5" />
 
     <TextView
         android:id="@+id/textView23"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="14dp"
-        android:text="2"
+        android:layout_marginTop="13dp"
+        android:layout_marginEnd="10dp"
+        android:text="3"
         android:textSize="20sp"
-        app:layout_constraintStart_toStartOf="@+id/btProxima5"
-        app:layout_constraintTop_toBottomOf="@+id/seekBar" />
+        app:layout_constraintEnd_toEndOf="@+id/seekBarResposta5"
+        app:layout_constraintTop_toBottomOf="@+id/seekBarResposta5" />
+
+    <TextView
+        android:id="@+id/textView12"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="120dp"
+        android:layout_marginTop="89dp"
+        android:text="1"
+        android:textSize="20sp"
+        app:layout_constraintStart_toStartOf="@+id/seekBarResposta5"
+        app:layout_constraintTop_toBottomOf="@+id/textView13" />
 
     <SeekBar
-        android:id="@+id/seekBar"
+        android:id="@+id/seekBarResposta5"
         style="@style/Widget.AppCompat.SeekBar.Discrete"
         android:layout_width="0dp"
         android:layout_height="40dp"
         android:layout_marginStart="20dp"
         android:layout_marginTop="37dp"
         android:layout_marginEnd="20dp"
-        android:layout_marginBottom="40dp"
+        android:layout_marginBottom="39dp"
         android:max="3"
         android:progress="1"
-        app:layout_constraintBottom_toBottomOf="@+id/textView18"
+        app:layout_constraintBottom_toBottomOf="@+id/textView12"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textView13" />
-
-    <TextView
-        android:id="@+id/textView24"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="14dp"
-        android:text="3"
-        android:textSize="20sp"
-        app:layout_constraintEnd_toEndOf="@+id/btProxima5"
-        app:layout_constraintStart_toEndOf="@+id/btProxima5"
-        app:layout_constraintTop_toBottomOf="@+id/seekBar" />
-
-    <TextView
-        android:id="@+id/textView19"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="13dp"
-        android:text="1"
-        android:textSize="20sp"
-        app:layout_constraintEnd_toEndOf="@+id/btAnterior4"
-        app:layout_constraintTop_toBottomOf="@+id/seekBar" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

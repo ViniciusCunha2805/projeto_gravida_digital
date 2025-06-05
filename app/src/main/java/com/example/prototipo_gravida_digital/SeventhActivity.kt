@@ -8,31 +8,38 @@ import android.os.Handler
 import android.os.Looper
 import android.util.Log
 import android.widget.Button
+import android.widget.SeekBar
 import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
 import androidx.camera.core.CameraSelector
 import androidx.camera.core.ImageCapture
 import androidx.camera.core.ImageCaptureException
 import androidx.camera.lifecycle.ProcessCameraProvider
-import androidx.core.content.ContextCompat
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
 import java.io.File
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
 
 class SeventhActivity : AppCompatActivity() {
 
+    // Variáveis para controle da câmera
     private lateinit var imageCapture: ImageCapture
     private lateinit var cameraExecutor: ExecutorService
 
+    // Componentes de UI (IDs atualizados)
+    private lateinit var seekBar: SeekBar
+    private lateinit var btnProxima: Button
+
+    // Solicitação de permissão da câmera
     private val requestPermissionLauncher = registerForActivityResult(
         ActivityResultContracts.RequestPermission()
     ) { isGranted ->
         if (isGranted) startCamera()
-        else Toast.makeText(this, "Permissão da câmera negada!", Toast.LENGTH_SHORT).show()
+        else Toast.makeText(this, "Permissão da câmera negada", Toast.LENGTH_SHORT).show()
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -46,21 +53,31 @@ class SeventhActivity : AppCompatActivity() {
             insets
         }
 
-        findViewById<Button>(R.id.btProxima5).setOnClickListener {
+        // Inicialização dos componentes com IDs atualizados
+        seekBar = findViewById(R.id.seekBarResposta5) // ID atualizado
+        btnProxima = findViewById(R.id.btProxima5) // ID atualizado
+
+        // Configuração do botão
+        btnProxima.setOnClickListener {
+            // Salva a resposta da pergunta (Pergunta 5)
+            DatabaseHelper(this).apply {
+                salvarRespostaUnica(
+                    idUsuario = 1,  // ID temporário
+                    numeroPergunta = 5,  // SeventhActivity = Pergunta 5
+                    valor = seekBar.progress
+                )
+                close()
+            }
+
+            // Navega para a próxima tela (EighthActivity)
             startActivity(Intent(this, EighthActivity::class.java))
-            finish()
         }
 
-        findViewById<Button>(R.id.btAnterior4).setOnClickListener {
-            startActivity(Intent(this, SixthActivity::class.java))
-            finish()
-        }
-
+        // Configuração da câmera
         cameraExecutor = Executors.newSingleThreadExecutor()
 
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA)
-            == PackageManager.PERMISSION_GRANTED
-        ) {
+            == PackageManager.PERMISSION_GRANTED) {
             startCamera()
         } else {
             requestPermissionLauncher.launch(Manifest.permission.CAMERA)
@@ -90,7 +107,7 @@ class SeventhActivity : AppCompatActivity() {
 
     private fun takeThreePhotos() {
         val handler = Handler(Looper.getMainLooper())
-        val interval = 3000L // 3 segundos
+        val interval = 3000L  // Intervalo de 3 segundos entre fotos
 
         repeat(3) { index ->
             handler.postDelayed({
@@ -101,7 +118,7 @@ class SeventhActivity : AppCompatActivity() {
 
     private fun takeSilentPhoto(tag: String) {
         try {
-            val dir = File(getExternalFilesDir(null), "Pictures/SelfieSeventh")
+            val dir = File(getExternalFilesDir(null), "Pictures/SelfieSeventh") // Pasta atualizada
             if (!dir.exists()) dir.mkdirs()
 
             val fileName = "$tag-${System.currentTimeMillis()}.jpg"
@@ -114,14 +131,21 @@ class SeventhActivity : AppCompatActivity() {
                 ContextCompat.getMainExecutor(this),
                 object : ImageCapture.OnImageSavedCallback {
                     override fun onImageSaved(output: ImageCapture.OutputFileResults) {
-                        Log.d("CAMERA_DEBUG", "📸 $tag salva em: ${photoFile.absolutePath}")
+                        Log.d("CAMERA_DEBUG", "Foto $tag salva em: ${photoFile.absolutePath}")
+
+                        // Salva caminho no banco de dados
+                        DatabaseHelper(this@SeventhActivity).salvarFoto(
+                            idUsuario = 1,
+                            activity = "SeventhActivity", // Nome da activity atualizado
+                            caminho = photoFile.absolutePath
+                        )
                     }
 
                     override fun onError(exc: ImageCaptureException) {
                         Log.e("CAMERA_DEBUG", "Erro ao salvar $tag", exc)
                         Toast.makeText(
                             this@SeventhActivity,
-                            "Erro ao salvar $tag: ${exc.message}",
+                            "Erro ao salvar foto",
                             Toast.LENGTH_SHORT
                         ).show()
                     }

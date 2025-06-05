@@ -8,32 +8,38 @@ import android.os.Handler
 import android.os.Looper
 import android.util.Log
 import android.widget.Button
+import android.widget.SeekBar
 import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
 import androidx.camera.core.CameraSelector
 import androidx.camera.core.ImageCapture
 import androidx.camera.core.ImageCaptureException
 import androidx.camera.lifecycle.ProcessCameraProvider
-import androidx.core.content.ContextCompat
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
 import java.io.File
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
 
 class FifthActivity : AppCompatActivity() {
 
+    // Variáveis para controle da câmera
     private lateinit var imageCapture: ImageCapture
     private lateinit var cameraExecutor: ExecutorService
+
+    // Componentes de UI (com IDs atualizados)
+    private lateinit var seekBar: SeekBar
+    private lateinit var btnProxima: Button
 
     // Solicitação de permissão da câmera
     private val requestPermissionLauncher = registerForActivityResult(
         ActivityResultContracts.RequestPermission()
     ) { isGranted ->
         if (isGranted) startCamera()
-        else Toast.makeText(this, "Permissão da câmera negada!", Toast.LENGTH_SHORT).show()
+        else Toast.makeText(this, "Permissão da câmera negada", Toast.LENGTH_SHORT).show()
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -41,38 +47,43 @@ class FifthActivity : AppCompatActivity() {
         enableEdgeToEdge()
         setContentView(R.layout.activity_fifth)
 
-        // Configura preenchimento automático para barras do sistema (status/nav bar)
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
             insets
         }
 
-        // Botão para ir para a próxima tela
-        findViewById<Button>(R.id.btProxima3).setOnClickListener {
+        // Inicialização dos componentes com IDs atualizados
+        seekBar = findViewById(R.id.seekBarResposta3) // ID atualizado
+        btnProxima = findViewById(R.id.btProxima3) // ID atualizado
+
+        // Configuração do botão
+        btnProxima.setOnClickListener {
+            // Salva a resposta da pergunta (Pergunta 3)
+            DatabaseHelper(this).apply {
+                salvarRespostaUnica(
+                    idUsuario = 1,  // ID temporário
+                    numeroPergunta = 3,  // FifthActivity = Pergunta 3
+                    valor = seekBar.progress
+                )
+                close()
+            }
+
+            // Navega para a próxima tela (SixthActivity)
             startActivity(Intent(this, SixthActivity::class.java))
-            finish()
         }
 
-        // Botão para voltar para a tela anterior
-        findViewById<Button>(R.id.btAnterior2).setOnClickListener {
-            startActivity(Intent(this, FourthActivity::class.java))
-            finish()
-        }
-
+        // Configuração da câmera
         cameraExecutor = Executors.newSingleThreadExecutor()
 
-        // Verifica se a permissão da câmera já foi concedida
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA)
-            == PackageManager.PERMISSION_GRANTED
-        ) {
+            == PackageManager.PERMISSION_GRANTED) {
             startCamera()
         } else {
             requestPermissionLauncher.launch(Manifest.permission.CAMERA)
         }
     }
 
-    // Inicializa a câmera
     private fun startCamera() {
         val cameraProviderFuture = ProcessCameraProvider.getInstance(this)
 
@@ -94,10 +105,9 @@ class FifthActivity : AppCompatActivity() {
         }, ContextCompat.getMainExecutor(this))
     }
 
-    // Tira 3 fotos em sequência com 3 segundos de intervalo
     private fun takeThreePhotos() {
         val handler = Handler(Looper.getMainLooper())
-        val interval = 3000L // 3 segundos
+        val interval = 3000L  // Intervalo de 3 segundos entre fotos
 
         repeat(3) { index ->
             handler.postDelayed({
@@ -106,10 +116,9 @@ class FifthActivity : AppCompatActivity() {
         }
     }
 
-    // Função que tira a foto silenciosamente e salva em arquivo
     private fun takeSilentPhoto(tag: String) {
         try {
-            val dir = File(getExternalFilesDir(null), "Pictures/SelfieFifth")
+            val dir = File(getExternalFilesDir(null), "Pictures/SelfieFifth") // Pasta atualizada
             if (!dir.exists()) dir.mkdirs()
 
             val fileName = "$tag-${System.currentTimeMillis()}.jpg"
@@ -122,14 +131,21 @@ class FifthActivity : AppCompatActivity() {
                 ContextCompat.getMainExecutor(this),
                 object : ImageCapture.OnImageSavedCallback {
                     override fun onImageSaved(output: ImageCapture.OutputFileResults) {
-                        Log.d("CAMERA_DEBUG", "📸 $tag salva em: ${photoFile.absolutePath}")
+                        Log.d("CAMERA_DEBUG", "Foto $tag salva em: ${photoFile.absolutePath}")
+
+                        // Salva caminho no banco de dados
+                        DatabaseHelper(this@FifthActivity).salvarFoto(
+                            idUsuario = 1,
+                            activity = "FifthActivity", // Nome da activity atualizado
+                            caminho = photoFile.absolutePath
+                        )
                     }
 
                     override fun onError(exc: ImageCaptureException) {
                         Log.e("CAMERA_DEBUG", "Erro ao salvar $tag", exc)
                         Toast.makeText(
                             this@FifthActivity,
-                            "Erro ao salvar $tag: ${exc.message}",
+                            "Erro ao salvar foto",
                             Toast.LENGTH_SHORT
                         ).show()
                     }
@@ -140,7 +156,6 @@ class FifthActivity : AppCompatActivity() {
         }
     }
 
-    // Finaliza a thread da câmera
     override fun onDestroy() {
         super.onDestroy()
         cameraExecutor.shutdown()

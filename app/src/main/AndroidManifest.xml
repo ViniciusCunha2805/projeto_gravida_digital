@@ -20,6 +20,10 @@
         android:theme="@style/Theme.Prototipo_gravida_digital"
         tools:targetApi="31">
         <activity
+            android:name=".ConfirmationActivity"
+            android:exported="false"
+            android:theme="@style/Theme.Prototipo_Gravida_Digital" />
+        <activity
             android:name=".EleventhActivity"
             android:exported="false" />
         <activity

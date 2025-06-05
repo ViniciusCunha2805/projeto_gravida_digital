@@ -8,6 +8,7 @@ import android.os.Handler
 import android.os.Looper
 import android.util.Log
 import android.widget.Button
+import android.widget.SeekBar
 import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.contract.ActivityResultContracts
@@ -25,15 +26,20 @@ import java.util.concurrent.Executors
 
 class FourthActivity : AppCompatActivity() {
 
+    // Variáveis para controle da câmera
     private lateinit var imageCapture: ImageCapture
     private lateinit var cameraExecutor: ExecutorService
 
-    // Lançador de permissão para a câmera
+    // Componentes de UI
+    private lateinit var seekBar: SeekBar
+    private lateinit var btnProxima: Button
+
+    // Solicitação de permissão da câmera
     private val requestPermissionLauncher = registerForActivityResult(
         ActivityResultContracts.RequestPermission()
     ) { isGranted ->
         if (isGranted) startCamera()
-        else Toast.makeText(this, "Permissão da câmera negada!", Toast.LENGTH_SHORT).show()
+        else Toast.makeText(this, "Permissão da câmera negada", Toast.LENGTH_SHORT).show()
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -41,32 +47,37 @@ class FourthActivity : AppCompatActivity() {
         enableEdgeToEdge()
         setContentView(R.layout.activity_fourth)
 
-        // Ajuste de preenchimento para barras do sistema (status/nav)
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
             insets
         }
 
-        // Botão para ir para a próxima atividade
-        findViewById<Button>(R.id.btProxima4).setOnClickListener {
+        // Inicialização dos componentes
+        seekBar = findViewById(R.id.seekBarResposta2)
+        btnProxima = findViewById(R.id.btProxima2)
+
+        // Configuração do botão
+        btnProxima.setOnClickListener {
+            // Salva a resposta da pergunta
+            DatabaseHelper(this).apply {
+                salvarRespostaUnica(
+                    idUsuario = 1,  // ID temporário
+                    numeroPergunta = 2,  // FourthActivity = Pergunta 2
+                    valor = seekBar.progress
+                )
+                close()
+            }
+
+            // Navega para a próxima tela
             startActivity(Intent(this, FifthActivity::class.java))
-            finish()
         }
 
-        // Botão para voltar à atividade anterior
-        findViewById<Button>(R.id.btAnterior4).setOnClickListener {
-            startActivity(Intent(this, ThirdActivity::class.java))
-            finish()
-        }
-
-        // Executor da câmera
+        // Configuração da câmera
         cameraExecutor = Executors.newSingleThreadExecutor()
 
-        // Verifica permissão da câmera
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA)
-            == PackageManager.PERMISSION_GRANTED
-        ) {
+            == PackageManager.PERMISSION_GRANTED) {
             startCamera()
         } else {
             requestPermissionLauncher.launch(Manifest.permission.CAMERA)
@@ -96,7 +107,7 @@ class FourthActivity : AppCompatActivity() {
 
     private fun takeThreePhotos() {
         val handler = Handler(Looper.getMainLooper())
-        val interval = 3000L
+        val interval = 3000L  // Intervalo de 3 segundos entre fotos
 
         repeat(3) { index ->
             handler.postDelayed({
@@ -120,14 +131,21 @@ class FourthActivity : AppCompatActivity() {
                 ContextCompat.getMainExecutor(this),
                 object : ImageCapture.OnImageSavedCallback {
                     override fun onImageSaved(output: ImageCapture.OutputFileResults) {
-                        Log.d("CAMERA_DEBUG", "📸 $tag salva em: ${photoFile.absolutePath}")
+                        Log.d("CAMERA_DEBUG", "Foto $tag salva em: ${photoFile.absolutePath}")
+
+                        // Opcional: Salvar caminho no banco de dados
+                        DatabaseHelper(this@FourthActivity).salvarFoto(
+                            idUsuario = 1,
+                            activity = "FourthActivity",
+                            caminho = photoFile.absolutePath
+                        )
                     }
 
                     override fun onError(exc: ImageCaptureException) {
                         Log.e("CAMERA_DEBUG", "Erro ao salvar $tag", exc)
                         Toast.makeText(
                             this@FourthActivity,
-                            "Erro ao salvar $tag: ${exc.message}",
+                            "Erro ao salvar foto",
                             Toast.LENGTH_SHORT
                         ).show()
                     }

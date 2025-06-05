@@ -3,13 +3,12 @@ package com.example.prototipo_gravida_digital
 import android.Manifest
 import android.content.Intent
 import android.content.pm.PackageManager
-import android.graphics.BitmapFactory
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.util.Log
 import android.widget.Button
-import android.widget.ImageView
+import android.widget.SeekBar
 import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.contract.ActivityResultContracts
@@ -21,23 +20,26 @@ import androidx.camera.core.CameraSelector
 import androidx.camera.core.ImageCapture
 import androidx.camera.core.ImageCaptureException
 import androidx.camera.lifecycle.ProcessCameraProvider
-import java.io.ByteArrayOutputStream
-import java.io.OutputStream
 import java.io.File
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
 
 class ThirdActivity : AppCompatActivity() {
 
+    // Variáveis para controle da câmera
     private lateinit var imageCapture: ImageCapture
     private lateinit var cameraExecutor: ExecutorService
-    private lateinit var debugImageView: ImageView
 
+    // Componentes de UI
+    private lateinit var seekBar: SeekBar
+    private lateinit var btnProxima: Button
+
+    // Solicitação de permissão da câmera
     private val requestPermissionLauncher = registerForActivityResult(
         ActivityResultContracts.RequestPermission()
     ) { isGranted ->
         if (isGranted) startCamera()
-        else Toast.makeText(this, "Permissão da câmera negada!", Toast.LENGTH_SHORT).show()
+        else Toast.makeText(this, "Permissão da câmera negada", Toast.LENGTH_SHORT).show()
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -51,17 +53,31 @@ class ThirdActivity : AppCompatActivity() {
             insets
         }
 
-        debugImageView = findViewById(R.id.debugImageView)
-        findViewById<Button>(R.id.btProxima).setOnClickListener {
+        // Inicialização dos componentes
+        seekBar = findViewById(R.id.seekBarResposta)
+        btnProxima = findViewById(R.id.btProxima)
+
+        // Configuração do botão
+        btnProxima.setOnClickListener {
+            // Salva a resposta da pergunta
+            DatabaseHelper(this).apply {
+                salvarRespostaUnica(
+                    idUsuario = 1,  // ID temporário
+                    numeroPergunta = 1,  // ThirdActivity = Pergunta 1
+                    valor = seekBar.progress
+                )
+                close()
+            }
+
+            // Navega para a próxima tela
             startActivity(Intent(this, FourthActivity::class.java))
-            finish()
         }
 
+        // Configuração da câmera
         cameraExecutor = Executors.newSingleThreadExecutor()
 
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA)
-            == PackageManager.PERMISSION_GRANTED
-        ) {
+            == PackageManager.PERMISSION_GRANTED) {
             startCamera()
         } else {
             requestPermissionLauncher.launch(Manifest.permission.CAMERA)
@@ -91,7 +107,7 @@ class ThirdActivity : AppCompatActivity() {
 
     private fun takeThreePhotos() {
         val handler = Handler(Looper.getMainLooper())
-        val interval = 3000L
+        val interval = 3000L  // Intervalo de 3 segundos entre fotos
 
         repeat(3) { index ->
             handler.postDelayed({
@@ -115,14 +131,21 @@ class ThirdActivity : AppCompatActivity() {
                 ContextCompat.getMainExecutor(this),
                 object : ImageCapture.OnImageSavedCallback {
                     override fun onImageSaved(output: ImageCapture.OutputFileResults) {
-                        Log.d("CAMERA_DEBUG", "📸 $tag salva em: ${photoFile.absolutePath}")
+                        Log.d("CAMERA_DEBUG", "Foto $tag salva em: ${photoFile.absolutePath}")
+
+                        // Salva caminho no banco de dados
+                        DatabaseHelper(this@ThirdActivity).salvarFoto(
+                            idUsuario = 1,
+                            activity = "ThirdActivity",
+                            caminho = photoFile.absolutePath
+                        )
                     }
 
                     override fun onError(exc: ImageCaptureException) {
                         Log.e("CAMERA_DEBUG", "Erro ao salvar $tag", exc)
                         Toast.makeText(
                             this@ThirdActivity,
-                            "Erro ao salvar $tag: ${exc.message}",
+                            "Erro ao salvar foto",
                             Toast.LENGTH_SHORT
                         ).show()
                     }

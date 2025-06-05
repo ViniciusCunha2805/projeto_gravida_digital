@@ -1,35 +1,59 @@
 package com.example.prototipo_gravida_digital
 
-import android.os.Bundle
-import androidx.activity.enableEdgeToEdge
-import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
 import android.content.Intent
+import android.os.Bundle
 import android.widget.Button
+import android.widget.CheckBox
+import android.widget.EditText
+import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
 
 class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
         setContentView(R.layout.activity_main)
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
-            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
-            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
-            insets
+
+        val editEmail = findViewById<EditText>(R.id.editEmail2)
+        val editSenha = findViewById<EditText>(R.id.editSenha2)
+        val checkTermos = findViewById<CheckBox>(R.id.checkTermos)
+        val btnEntrar = findViewById<Button>(R.id.btEntrar)
+        val btnCadastrar = findViewById<Button>(R.id.btCadastrar)
+
+        btnEntrar.setOnClickListener {
+            val email = editEmail.text.toString().trim()
+            val senha = editSenha.text.toString().trim()
+
+            // Validações básicas
+            if (email.isEmpty() || senha.isEmpty()) {
+                Toast.makeText(this, "Preencha todos os campos", Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
+            }
+
+            if (!checkTermos.isChecked) {
+                Toast.makeText(this, "Aceite os termos para continuar", Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
+            }
+
+            // Verificação no banco de dados
+            val dbHelper = DatabaseHelper(this)
+            if (dbHelper.verificarLogin(email, senha)) {
+                Toast.makeText(this, "Login realizado com sucesso!", Toast.LENGTH_SHORT).show()
+                val intent = Intent(this, ThirdActivity::class.java).apply {
+                    flags = Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK
+                }
+                startActivity(intent)
+                finish()
+            } else {
+                Toast.makeText(this, "E-mail ou senha incorretos", Toast.LENGTH_SHORT).show()
+            }
         }
 
-        val button1: Button = findViewById(R.id.btCadastrar)
-        button1.setOnClickListener {
-            val intent = Intent(this, SecondActivity::class.java)
-            startActivity(intent)
+        btnCadastrar.setOnClickListener {
+            if (!checkTermos.isChecked) {
+                Toast.makeText(this, "Aceite os termos para criar uma conta", Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
+            }
+            startActivity(Intent(this, SecondActivity::class.java))
         }
-
-        val button2: Button = findViewById(R.id.btEntrar)
-        button2.setOnClickListener {
-            val intent = Intent(this, ThirdActivity::class.java)
-            startActivity(intent)
-        }
-
     }
 }

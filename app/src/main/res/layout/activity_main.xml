@@ -13,11 +13,11 @@
     <LinearLayout
         android:id="@+id/linearLayout23"
         android:layout_width="0dp"
-        android:layout_height="86dp"
+        android:layout_height="0dp"
         android:layout_marginBottom="27dp"
         android:background="#3F8AF0"
         android:orientation="vertical"
-        app:layout_constraintBottom_toTopOf="@+id/editTextText"
+        app:layout_constraintBottom_toTopOf="@+id/editEmail2"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
@@ -36,7 +36,7 @@
     </LinearLayout>
 
     <CheckBox
-        android:id="@+id/checkBox"
+        android:id="@+id/checkTermos"
         android:layout_width="374dp"
         android:layout_height="0dp"
         android:layout_marginBottom="23dp"
@@ -51,7 +51,7 @@
         android:id="@+id/btCadastrar"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="28dp"
+        android:layout_marginEnd="29dp"
         android:text="Criar conta"
         app:layout_constraintBaseline_toBaselineOf="@+id/btEntrar"
         app:layout_constraintEnd_toStartOf="@+id/btEntrar"
@@ -64,46 +64,36 @@
         android:layout_height="wrap_content"
         android:text="Leia os termos abaixo:"
         android:textSize="20sp"
-        app:layout_constraintBottom_toTopOf="@+id/checkBox"
-        app:layout_constraintStart_toStartOf="@+id/checkBox"
-        app:layout_constraintTop_toBottomOf="@+id/textView4" />
+        app:layout_constraintBottom_toTopOf="@+id/checkTermos"
+        app:layout_constraintStart_toStartOf="@+id/checkTermos"
+        app:layout_constraintTop_toBottomOf="@+id/editSenha2" />
 
     <Button
         android:id="@+id/btEntrar"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="7dp"
+        android:layout_marginEnd="6dp"
         android:layout_marginBottom="269dp"
         android:text="Entrar"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/btCadastrar"
-        app:layout_constraintTop_toBottomOf="@+id/checkBox" />
+        app:layout_constraintTop_toBottomOf="@+id/checkTermos" />
 
     <EditText
-        android:id="@+id/editTextText2"
+        android:id="@+id/editSenha2"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="7dp"
+        android:layout_marginBottom="66dp"
         android:ems="10"
         android:inputType="text"
         android:text="Senha"
-        app:layout_constraintBottom_toTopOf="@+id/textView4"
-        app:layout_constraintStart_toStartOf="@+id/editTextText"
-        app:layout_constraintTop_toBottomOf="@+id/editTextText" />
-
-    <TextView
-        android:id="@+id/textView4"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="40dp"
-        android:text="Esqueci a senha"
         app:layout_constraintBottom_toTopOf="@+id/textView5"
-        app:layout_constraintStart_toStartOf="@+id/editTextText2"
-        app:layout_constraintTop_toBottomOf="@+id/editTextText2" />
+        app:layout_constraintStart_toStartOf="@+id/editEmail2"
+        app:layout_constraintTop_toBottomOf="@+id/editEmail2" />
 
     <EditText
-        android:id="@+id/editTextText"
+        android:id="@+id/editEmail2"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="72dp"
@@ -111,7 +101,7 @@
         android:ems="10"
         android:inputType="text"
         android:text="Email"
-        app:layout_constraintBottom_toTopOf="@+id/editTextText2"
+        app:layout_constraintBottom_toTopOf="@+id/editSenha2"
         app:layout_constraintStart_toStartOf="@+id/linearLayout23"
         app:layout_constraintTop_toBottomOf="@+id/linearLayout23" />
 
