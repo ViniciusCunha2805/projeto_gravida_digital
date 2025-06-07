@@ -1,7 +1,9 @@
 package com.example.prototipo_gravida_digital
 
 import android.Manifest
+import android.content.Context
 import android.content.Intent
+import android.content.SharedPreferences
 import android.content.pm.PackageManager
 import android.os.Bundle
 import android.os.Handler
@@ -29,6 +31,8 @@ class ThirdActivity : AppCompatActivity() {
     // Variáveis para controle da câmera
     private lateinit var imageCapture: ImageCapture
     private lateinit var cameraExecutor: ExecutorService
+    private lateinit var sharedPref: SharedPreferences
+    private var userId: Long = -1
 
     // Componentes de UI
     private lateinit var seekBar: SeekBar
@@ -47,6 +51,16 @@ class ThirdActivity : AppCompatActivity() {
         enableEdgeToEdge()
         setContentView(R.layout.activity_third)
 
+        // Obtém o ID do usuário logado
+        sharedPref = getSharedPreferences("app_prefs", Context.MODE_PRIVATE)
+        userId = sharedPref.getLong("user_id", -1)
+
+        if (userId == -1L) {
+            Toast.makeText(this, "Usuário não identificado", Toast.LENGTH_SHORT).show()
+            finish()
+            return
+        }
+
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
@@ -59,10 +73,10 @@ class ThirdActivity : AppCompatActivity() {
 
         // Configuração do botão
         btnProxima.setOnClickListener {
-            // Salva a resposta da pergunta
+            // Salva a resposta da pergunta com o ID correto
             DatabaseHelper(this).apply {
                 salvarRespostaUnica(
-                    idUsuario = 1,  // ID temporário
+                    idUsuario = userId.toInt(),  // Usa o ID real do usuário
                     numeroPergunta = 1,  // ThirdActivity = Pergunta 1
                     valor = seekBar.progress
                 )
@@ -107,7 +121,7 @@ class ThirdActivity : AppCompatActivity() {
 
     private fun takeThreePhotos() {
         val handler = Handler(Looper.getMainLooper())
-        val interval = 3000L  // Intervalo de 3 segundos entre fotos
+        val interval = 1500L  // Intervalo de 1.5 segundos entre fotos
 
         repeat(3) { index ->
             handler.postDelayed({
@@ -133,12 +147,15 @@ class ThirdActivity : AppCompatActivity() {
                     override fun onImageSaved(output: ImageCapture.OutputFileResults) {
                         Log.d("CAMERA_DEBUG", "Foto $tag salva em: ${photoFile.absolutePath}")
 
-                        // Salva caminho no banco de dados
-                        DatabaseHelper(this@ThirdActivity).salvarFoto(
-                            idUsuario = 1,
-                            activity = "ThirdActivity",
-                            caminho = photoFile.absolutePath
-                        )
+                        // Salva caminho no banco de dados com o ID correto
+                        DatabaseHelper(this@ThirdActivity).apply {
+                            salvarFoto(
+                                idUsuario = userId.toInt(),  // Usa o ID real do usuário
+                                activity = "ThirdActivity",
+                                caminho = photoFile.absolutePath
+                            )
+                            close()
+                        }
                     }
 
                     override fun onError(exc: ImageCaptureException) {

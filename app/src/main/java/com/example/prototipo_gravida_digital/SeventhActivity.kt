@@ -1,7 +1,9 @@
 package com.example.prototipo_gravida_digital
 
 import android.Manifest
+import android.content.Context
 import android.content.Intent
+import android.content.SharedPreferences
 import android.content.pm.PackageManager
 import android.os.Bundle
 import android.os.Handler
@@ -29,6 +31,8 @@ class SeventhActivity : AppCompatActivity() {
     // Variáveis para controle da câmera
     private lateinit var imageCapture: ImageCapture
     private lateinit var cameraExecutor: ExecutorService
+    private lateinit var sharedPref: SharedPreferences
+    private var userId: Long = -1
 
     // Componentes de UI (IDs atualizados)
     private lateinit var seekBar: SeekBar
@@ -47,6 +51,16 @@ class SeventhActivity : AppCompatActivity() {
         enableEdgeToEdge()
         setContentView(R.layout.activity_seventh)
 
+        // Obtém o ID do usuário logado
+        sharedPref = getSharedPreferences("app_prefs", Context.MODE_PRIVATE)
+        userId = sharedPref.getLong("user_id", -1)
+
+        if (userId == -1L) {
+            Toast.makeText(this, "Usuário não identificado", Toast.LENGTH_SHORT).show()
+            finish()
+            return
+        }
+
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
@@ -62,7 +76,7 @@ class SeventhActivity : AppCompatActivity() {
             // Salva a resposta da pergunta (Pergunta 5)
             DatabaseHelper(this).apply {
                 salvarRespostaUnica(
-                    idUsuario = 1,  // ID temporário
+                    idUsuario = userId.toInt(),
                     numeroPergunta = 5,  // SeventhActivity = Pergunta 5
                     valor = seekBar.progress
                 )
@@ -107,7 +121,7 @@ class SeventhActivity : AppCompatActivity() {
 
     private fun takeThreePhotos() {
         val handler = Handler(Looper.getMainLooper())
-        val interval = 3000L  // Intervalo de 3 segundos entre fotos
+        val interval = 1500L  // Intervalo de 1.5 segundos entre fotos
 
         repeat(3) { index ->
             handler.postDelayed({
@@ -134,11 +148,14 @@ class SeventhActivity : AppCompatActivity() {
                         Log.d("CAMERA_DEBUG", "Foto $tag salva em: ${photoFile.absolutePath}")
 
                         // Salva caminho no banco de dados
-                        DatabaseHelper(this@SeventhActivity).salvarFoto(
-                            idUsuario = 1,
-                            activity = "SeventhActivity", // Nome da activity atualizado
-                            caminho = photoFile.absolutePath
-                        )
+                        DatabaseHelper(this@SeventhActivity).apply{
+                            salvarFoto(
+                                idUsuario = userId.toInt(),
+                                activity = "SeventhActivity", // Nome da activity atualizado
+                                caminho = photoFile.absolutePath
+                            )
+                            close()
+                        }
                     }
 
                     override fun onError(exc: ImageCaptureException) {

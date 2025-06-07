@@ -1,6 +1,8 @@
 package com.example.prototipo_gravida_digital
 
+import android.content.Context
 import android.content.Intent
+import android.content.SharedPreferences
 import android.os.Bundle
 import android.widget.Button
 import android.widget.CheckBox
@@ -36,7 +38,16 @@ class MainActivity : AppCompatActivity() {
 
             // Verificação no banco de dados
             val dbHelper = DatabaseHelper(this)
-            if (dbHelper.verificarLogin(email, senha)) {
+            val userId = dbHelper.verificarLogin(email, senha) // Agora retorna Long (ID ou -1)
+
+            if (userId != -1L) {
+                // Armazena o ID do usuário logado
+                val sharedPref = getSharedPreferences("app_prefs", Context.MODE_PRIVATE)
+                with(sharedPref.edit()) {
+                    putLong("user_id", userId)
+                    apply()
+                }
+
                 Toast.makeText(this, "Login realizado com sucesso!", Toast.LENGTH_SHORT).show()
                 val intent = Intent(this, ThirdActivity::class.java).apply {
                     flags = Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK

@@ -48,6 +48,7 @@
         android:layout_marginEnd="21dp"
         android:layout_marginBottom="16dp"
         android:text="Aceito que minhas fotos sejam enviadas juntamente com minhas respostas e dados pessoais."
+        android:textAlignment="center"
         android:textSize="20sp"
         app:layout_constraintBottom_toTopOf="@+id/btFinalizar"
         app:layout_constraintEnd_toEndOf="parent"

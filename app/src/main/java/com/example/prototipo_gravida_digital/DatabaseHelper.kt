@@ -95,17 +95,19 @@ class DatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME
         return db.insert(TABLE_USUARIOS, null, values)
     }
 
-    // Método para verificar login (COM CURSOR CORRETAMENTE FECHADO)
-    fun verificarLogin(email: String, senha: String): Boolean {
+    // Substitua o método verificarLogin por este:
+    fun verificarLogin(email: String, senha: String): Long {
         val db = readableDatabase
         val cursor = db.rawQuery("""
-            SELECT * FROM $TABLE_USUARIOS 
-            WHERE $COLUMN_EMAIL = ? AND $COLUMN_SENHA = ?
-        """, arrayOf(email, senha))
+        SELECT $COLUMN_ID FROM $TABLE_USUARIOS 
+        WHERE $COLUMN_EMAIL = ? AND $COLUMN_SENHA = ?
+    """, arrayOf(email, senha))
 
-        val existe = cursor.count > 0
-        cursor.close() // Fechando o cursor para liberar recursos
-        return existe
+        return if (cursor.moveToFirst()) {
+            cursor.getLong(0) // Retorna o ID do usuário
+        } else {
+            -1 // Retorna -1 se login falhar
+        }.also { cursor.close() }
     }
 
     // Método para verificar se e-mail já está cadastrado (COM CURSOR CORRETAMENTE FECHADO)

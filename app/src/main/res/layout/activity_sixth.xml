@@ -33,53 +33,54 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="20dp"
-        android:layout_marginEnd="108dp"
+        android:layout_marginEnd="10dp"
         android:text="Próxima"
-        app:layout_constraintEnd_toStartOf="@+id/textView22"
+        app:layout_constraintEnd_toEndOf="@+id/textView21"
         app:layout_constraintTop_toBottomOf="@+id/textView21" />
 
     <TextView
         android:id="@+id/textView20"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="3dp"
+        android:layout_marginEnd="9dp"
+        android:layout_marginBottom="21dp"
         android:text="1"
         android:textSize="20sp"
-        app:layout_constraintTop_toBottomOf="@+id/seekBarResposta4"
-        tools:layout_editor_absoluteX="147dp" />
+        app:layout_constraintBottom_toTopOf="@+id/btProxima4"
+        app:layout_constraintEnd_toStartOf="@+id/btProxima4" />
 
     <TextView
         android:id="@+id/textView22"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginTop="5dp"
         android:layout_marginEnd="9dp"
         android:text="3"
         android:textSize="20sp"
-        app:layout_constraintBottom_toBottomOf="@+id/textView16"
         app:layout_constraintEnd_toEndOf="@+id/seekBarResposta4"
-        app:layout_constraintTop_toTopOf="@+id/textView16" />
+        app:layout_constraintTop_toBottomOf="@+id/seekBarResposta4" />
 
     <TextView
         android:id="@+id/textView21"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="100dp"
-        android:layout_marginTop="4dp"
+        android:layout_marginTop="304dp"
+        android:layout_marginEnd="119dp"
         android:text="2"
         android:textSize="20sp"
-        app:layout_constraintStart_toStartOf="@+id/btProxima4"
-        app:layout_constraintTop_toBottomOf="@+id/seekBarResposta4" />
+        app:layout_constraintEnd_toEndOf="@+id/seekBarResposta4"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
         android:id="@+id/textView16"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="12dp"
-        android:layout_marginTop="305dp"
+        android:layout_marginStart="13dp"
+        android:layout_marginTop="5dp"
         android:text="0"
         android:textSize="20sp"
         app:layout_constraintStart_toStartOf="@+id/seekBarResposta4"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toBottomOf="@+id/seekBarResposta4" />
 
     <TextView
         android:id="@+id/textView6"
@@ -96,29 +97,29 @@
         android:id="@+id/textView13"
         android:layout_width="0dp"
         android:layout_height="58dp"
-        android:layout_marginStart="34dp"
+        android:layout_marginStart="50dp"
         android:layout_marginTop="68dp"
-        android:layout_marginEnd="33dp"
-        android:layout_marginBottom="71dp"
+        android:layout_marginEnd="50dp"
+        android:layout_marginBottom="69dp"
         android:text="Sentiu-se cansado ou com pouca energia?"
         android:textSize="20sp"
-        app:layout_constraintBottom_toTopOf="@+id/textView16"
-        app:layout_constraintEnd_toStartOf="@+id/textView22"
-        app:layout_constraintStart_toStartOf="@+id/textView6"
+        app:layout_constraintBottom_toTopOf="@+id/textView20"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="@+id/textView6" />
 
     <SeekBar
         android:id="@+id/seekBarResposta4"
         style="@style/Widget.AppCompat.SeekBar.Discrete"
-        android:layout_width="383dp"
+        android:layout_width="0dp"
         android:layout_height="40dp"
-        android:layout_marginStart="25dp"
-        android:layout_marginTop="23dp"
-        android:layout_marginEnd="25dp"
+        android:layout_marginStart="14dp"
+        android:layout_marginTop="26dp"
+        android:layout_marginEnd="14dp"
         android:layout_marginBottom="30dp"
         android:max="3"
         android:progress="1"
-        app:layout_constraintBottom_toBottomOf="@+id/textView22"
+        app:layout_constraintBottom_toBottomOf="@+id/textView20"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textView13" />

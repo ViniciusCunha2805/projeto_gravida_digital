@@ -48,8 +48,8 @@
         android:layout_marginStart="30dp"
         android:layout_marginBottom="23dp"
         android:ems="10"
+        android:hint="Nome completo"
         android:inputType="text"
-        android:text="Nome completo"
         app:layout_constraintBottom_toTopOf="@+id/editEmail"
         app:layout_constraintStart_toStartOf="@+id/textView11"
         app:layout_constraintTop_toBottomOf="@+id/textView11" />
@@ -60,8 +60,8 @@
         android:layout_height="wrap_content"
         android:layout_marginBottom="19dp"
         android:ems="10"
+        android:hint="Email"
         android:inputType="text"
-        android:text="Email"
         app:layout_constraintBottom_toTopOf="@+id/editSenha"
         app:layout_constraintStart_toStartOf="@+id/editNome"
         app:layout_constraintTop_toBottomOf="@+id/editNome" />
@@ -72,8 +72,8 @@
         android:layout_height="wrap_content"
         android:layout_marginBottom="17dp"
         android:ems="10"
+        android:hint="Crie uma senha"
         android:inputType="text"
-        android:text="Crie uma senha"
         app:layout_constraintBottom_toTopOf="@+id/editConfirmaSenha"
         app:layout_constraintStart_toStartOf="@+id/editEmail"
         app:layout_constraintTop_toBottomOf="@+id/editEmail" />
@@ -84,8 +84,8 @@
         android:layout_height="wrap_content"
         android:layout_marginBottom="31dp"
         android:ems="10"
+        android:hint="Confirme a senha"
         android:inputType="text"
-        android:text="Confirme a senha"
         app:layout_constraintBottom_toTopOf="@+id/btCadastrar2"
         app:layout_constraintStart_toStartOf="@+id/editSenha"
         app:layout_constraintTop_toBottomOf="@+id/editSenha" />

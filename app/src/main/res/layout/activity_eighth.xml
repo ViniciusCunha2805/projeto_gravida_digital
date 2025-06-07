@@ -9,70 +9,66 @@
 
     <TextView
         android:id="@+id/textView13"
-        android:layout_width="279dp"
+        android:layout_width="0dp"
         android:layout_height="57dp"
-        android:layout_marginStart="25dp"
-        android:layout_marginTop="66dp"
-        android:layout_marginEnd="26dp"
-        android:layout_marginBottom="69dp"
+        android:layout_marginStart="66dp"
+        android:layout_marginTop="76dp"
+        android:layout_marginEnd="66dp"
+        android:layout_marginBottom="73dp"
         android:text="Sentiu-se mal consigo mesmo ou que falhou?"
         android:textSize="20sp"
-        app:layout_constraintBottom_toTopOf="@+id/textView31"
+        app:layout_constraintBottom_toTopOf="@+id/textView29"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.275"
-        app:layout_constraintStart_toStartOf="@+id/seekBarResposta6"
-        app:layout_constraintTop_toTopOf="@+id/textView6"
-        app:layout_constraintVertical_bias="0.0" />
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/linearLayout30" />
 
     <Button
         android:id="@+id/btProxima6"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="38dp"
-        android:layout_marginEnd="108dp"
+        android:layout_marginTop="22dp"
         android:text="Próxima"
-        app:layout_constraintEnd_toStartOf="@+id/textView31"
-        app:layout_constraintTop_toBottomOf="@+id/textView8" />
+        app:layout_constraintStart_toEndOf="@+id/textView29"
+        app:layout_constraintTop_toBottomOf="@+id/textView29" />
 
     <TextView
         android:id="@+id/textView29"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
-        android:layout_marginEnd="23dp"
+        android:layout_marginStart="124dp"
+        android:layout_marginTop="292dp"
         android:text="1"
         android:textSize="20sp"
-        app:layout_constraintEnd_toStartOf="@+id/btProxima6"
-        app:layout_constraintTop_toBottomOf="@+id/seekBarResposta6" />
+        app:layout_constraintStart_toStartOf="@+id/seekBarResposta6"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
         android:id="@+id/textView31"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="300dp"
-        android:layout_marginEnd="11dp"
+        android:layout_marginTop="73dp"
+        android:layout_marginEnd="8dp"
         android:text="3"
         android:textSize="20sp"
         app:layout_constraintEnd_toEndOf="@+id/seekBarResposta6"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toBottomOf="@+id/textView13" />
 
     <TextView
         android:id="@+id/textView8"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="300dp"
-        android:layout_marginEnd="132dp"
+        android:layout_marginTop="15dp"
         android:text="2"
         android:textSize="20sp"
-        app:layout_constraintEnd_toEndOf="@+id/seekBarResposta6"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintStart_toEndOf="@+id/btProxima6"
+        app:layout_constraintTop_toBottomOf="@+id/seekBarResposta6" />
 
     <TextView
         android:id="@+id/textView28"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="14dp"
-        android:layout_marginTop="8dp"
+        android:layout_marginStart="9dp"
+        android:layout_marginTop="15dp"
         android:text="0"
         android:textSize="20sp"
         app:layout_constraintStart_toStartOf="@+id/seekBarResposta6"
@@ -83,21 +79,21 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
-        android:layout_marginTop="24dp"
+        android:layout_marginTop="103dp"
         android:text="Pergunta 6"
         android:textSize="34sp"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/linearLayout30" />
+        app:layout_constraintTop_toTopOf="parent" />
 
     <SeekBar
         android:id="@+id/seekBarResposta6"
         style="@style/Widget.AppCompat.SeekBar.Discrete"
-        android:layout_width="401dp"
-        android:layout_height="39dp"
-        android:layout_marginStart="25dp"
-        android:layout_marginTop="14dp"
-        android:layout_marginEnd="25dp"
-        android:layout_marginBottom="3dp"
+        android:layout_width="0dp"
+        android:layout_height="31dp"
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="27dp"
+        android:layout_marginEnd="20dp"
+        android:layout_marginBottom="15dp"
         android:max="3"
         android:progress="1"
         app:layout_constraintBottom_toTopOf="@+id/textView31"
@@ -108,9 +104,11 @@
     <LinearLayout
         android:id="@+id/linearLayout30"
         android:layout_width="0dp"
-        android:layout_height="86dp"
+        android:layout_height="0dp"
+        android:layout_marginBottom="17dp"
         android:background="#3F8AF0"
         android:orientation="vertical"
+        app:layout_constraintBottom_toTopOf="@+id/textView6"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
