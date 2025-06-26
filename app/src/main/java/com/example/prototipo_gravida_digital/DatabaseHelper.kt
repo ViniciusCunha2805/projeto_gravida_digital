@@ -9,7 +9,7 @@ class DatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME
 
     companion object {
         private const val DATABASE_NAME = "gravida_digital.db"
-        private const val DATABASE_VERSION = 1
+        private const val DATABASE_VERSION = 1  // Versão reiniciada
 
         // Tabela de usuários
         const val TABLE_USUARIOS = "usuarios"
@@ -18,19 +18,13 @@ class DatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME
         const val COLUMN_EMAIL = "email"
         const val COLUMN_SENHA = "senha"
 
-        // Tabela de respostas
+        // Tabela de respostas (nova estrutura)
         const val TABLE_RESPOSTAS = "respostas"
         const val COLUMN_ID_RESPOSTA = "id_resposta"
         const val COLUMN_ID_USUARIO = "id_usuario"
         const val COLUMN_DATA = "data"
-        const val COLUMN_P1 = "pergunta1"
-        const val COLUMN_P2 = "pergunta2"
-        const val COLUMN_P3 = "pergunta3"
-        const val COLUMN_P4 = "pergunta4"
-        const val COLUMN_P5 = "pergunta5"
-        const val COLUMN_P6 = "pergunta6"
-        const val COLUMN_P7 = "pergunta7"
-        const val COLUMN_P8 = "pergunta8"
+        const val COLUMN_PERGUNTA_NUM = "pergunta_numero"
+        const val COLUMN_VALOR_RESPOSTA = "valor_resposta"
 
         // Tabela de fotos
         const val TABLE_FOTOS = "fotos"
@@ -40,6 +34,7 @@ class DatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME
     }
 
     override fun onCreate(db: SQLiteDatabase) {
+        // 1. Tabela de usuários (inalterada)
         db.execSQL("""
             CREATE TABLE $TABLE_USUARIOS (
                 $COLUMN_ID INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -49,23 +44,19 @@ class DatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME
             )
         """)
 
+        // 2. NOVA tabela de respostas (sem colunas P1-P8)
         db.execSQL("""
             CREATE TABLE $TABLE_RESPOSTAS (
                 $COLUMN_ID_RESPOSTA INTEGER PRIMARY KEY AUTOINCREMENT,
                 $COLUMN_ID_USUARIO INTEGER NOT NULL,
                 $COLUMN_DATA TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-                $COLUMN_P1 INTEGER,
-                $COLUMN_P2 INTEGER,
-                $COLUMN_P3 INTEGER,
-                $COLUMN_P4 INTEGER,
-                $COLUMN_P5 INTEGER,
-                $COLUMN_P6 INTEGER,
-                $COLUMN_P7 INTEGER,
-                $COLUMN_P8 INTEGER,
+                $COLUMN_PERGUNTA_NUM INTEGER NOT NULL CHECK ($COLUMN_PERGUNTA_NUM BETWEEN 1 AND 8),
+                $COLUMN_VALOR_RESPOSTA INTEGER NOT NULL CHECK ($COLUMN_VALOR_RESPOSTA BETWEEN 0 AND 3),
                 FOREIGN KEY ($COLUMN_ID_USUARIO) REFERENCES $TABLE_USUARIOS($COLUMN_ID)
             )
         """)
 
+        // 3. Tabela de fotos (inalterada)
         db.execSQL("""
             CREATE TABLE $TABLE_FOTOS (
                 $COLUMN_ID_FOTO INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -78,13 +69,14 @@ class DatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME
     }
 
     override fun onUpgrade(db: SQLiteDatabase, oldVersion: Int, newVersion: Int) {
+        // Remove tudo e recria (para versões futuras)
         db.execSQL("DROP TABLE IF EXISTS $TABLE_USUARIOS")
         db.execSQL("DROP TABLE IF EXISTS $TABLE_RESPOSTAS")
         db.execSQL("DROP TABLE IF EXISTS $TABLE_FOTOS")
         onCreate(db)
     }
 
-    // Método para cadastrar usuário
+    // Métodos para usuários (inalterados) ------------------------------------
     fun cadastrarUsuario(nome: String, email: String, senha: String): Long {
         val db = writableDatabase
         val values = ContentValues().apply {
@@ -95,7 +87,6 @@ class DatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME
         return db.insert(TABLE_USUARIOS, null, values)
     }
 
-    // Substitua o método verificarLogin por este:
     fun verificarLogin(email: String, senha: String): Long {
         val db = readableDatabase
         val cursor = db.rawQuery("""
@@ -103,46 +94,32 @@ class DatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME
         WHERE $COLUMN_EMAIL = ? AND $COLUMN_SENHA = ?
     """, arrayOf(email, senha))
 
-        return if (cursor.moveToFirst()) {
-            cursor.getLong(0) // Retorna o ID do usuário
-        } else {
-            -1 // Retorna -1 se login falhar
-        }.also { cursor.close() }
+        return cursor.use {
+            if (it.moveToFirst()) it.getLong(0) else (-1L)
+        }
     }
 
-    // Método para verificar se e-mail já está cadastrado (COM CURSOR CORRETAMENTE FECHADO)
     fun verificarEmailExistente(email: String): Boolean {
         val db = readableDatabase
         val cursor = db.rawQuery("""
-        SELECT * FROM $TABLE_USUARIOS 
-        WHERE $COLUMN_EMAIL = ?
-    """, arrayOf(email))
-
-        val existe = cursor.count > 0
-        cursor.close() // Fechando o cursor para liberar recursos
-        return existe
+            SELECT * FROM $TABLE_USUARIOS 
+            WHERE $COLUMN_EMAIL = ?
+        """, arrayOf(email))
+        return cursor.count > 0.also { cursor.close() }
     }
 
-    // Método para salvar respostas
-    fun salvarRespostaUnica(idUsuario: Int, numeroPergunta: Int, valor: Int): Long {
+    // NOVOS métodos para respostas -------------------------------------------
+    fun salvarResposta(idUsuario: Int, perguntaNum: Int, valor: Int): Long {
         val db = writableDatabase
         val values = ContentValues().apply {
             put(COLUMN_ID_USUARIO, idUsuario)
-            when(numeroPergunta) {
-                1 -> put(COLUMN_P1, valor)
-                2 -> put(COLUMN_P2, valor)
-                3 -> put(COLUMN_P3, valor)
-                4 -> put(COLUMN_P4, valor)
-                5 -> put(COLUMN_P5, valor)
-                6 -> put(COLUMN_P6, valor)
-                7 -> put(COLUMN_P7, valor)
-                8 -> put(COLUMN_P8, valor)
-            }
+            put(COLUMN_PERGUNTA_NUM, perguntaNum)
+            put(COLUMN_VALOR_RESPOSTA, valor)
         }
         return db.insert(TABLE_RESPOSTAS, null, values)
     }
 
-    // Método para salvar fotos
+    // Métodos para fotos (inalterados) --------------------------------------
     fun salvarFoto(idUsuario: Int, activity: String, caminho: String): Long {
         val db = writableDatabase
         val values = ContentValues().apply {

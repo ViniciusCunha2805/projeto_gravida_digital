@@ -2,8 +2,8 @@ package com.example.prototipo_gravida_digital
 
 import android.content.Context
 import android.content.Intent
-import android.content.SharedPreferences
 import android.os.Bundle
+
 import android.widget.Button
 import android.widget.CheckBox
 import android.widget.EditText
@@ -11,37 +11,41 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 
 class MainActivity : AppCompatActivity() {
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
+        // Referências aos componentes da interface
         val editEmail = findViewById<EditText>(R.id.editEmail2)
         val editSenha = findViewById<EditText>(R.id.editSenha2)
         val checkTermos = findViewById<CheckBox>(R.id.checkTermos)
         val btnEntrar = findViewById<Button>(R.id.btEntrar)
         val btnCadastrar = findViewById<Button>(R.id.btCadastrar)
 
+        // Ação do botão "Entrar"
         btnEntrar.setOnClickListener {
             val email = editEmail.text.toString().trim()
             val senha = editSenha.text.toString().trim()
 
-            // Validações básicas
+            // Validação: campos não podem estar vazios
             if (email.isEmpty() || senha.isEmpty()) {
                 Toast.makeText(this, "Preencha todos os campos", Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
             }
 
+            // Validação: o usuário deve aceitar os termos
             if (!checkTermos.isChecked) {
                 Toast.makeText(this, "Aceite os termos para continuar", Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
             }
 
-            // Verificação no banco de dados
+            // Verificação de login no banco de dados
             val dbHelper = DatabaseHelper(this)
-            val userId = dbHelper.verificarLogin(email, senha) // Agora retorna Long (ID ou -1)
+            val userId = dbHelper.verificarLogin(email, senha) // Retorna o ID do usuário ou -1 se não encontrado
 
             if (userId != -1L) {
-                // Armazena o ID do usuário logado
+                // Salva o ID do usuário logado nas preferências compartilhadas
                 val sharedPref = getSharedPreferences("app_prefs", Context.MODE_PRIVATE)
                 with(sharedPref.edit()) {
                     putLong("user_id", userId)
@@ -49,21 +53,28 @@ class MainActivity : AppCompatActivity() {
                 }
 
                 Toast.makeText(this, "Login realizado com sucesso!", Toast.LENGTH_SHORT).show()
+
+                // Navega para a ThirdActivity, limpando a pilha de atividades
                 val intent = Intent(this, ThirdActivity::class.java).apply {
                     flags = Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK
                 }
                 startActivity(intent)
                 finish()
             } else {
+                // Mensagem de erro caso o login falhe
                 Toast.makeText(this, "E-mail ou senha incorretos", Toast.LENGTH_SHORT).show()
             }
         }
 
+        // Ação do botão "Cadastrar"
         btnCadastrar.setOnClickListener {
+            // Validação: o usuário deve aceitar os termos
             if (!checkTermos.isChecked) {
                 Toast.makeText(this, "Aceite os termos para criar uma conta", Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
             }
+
+            // Navega para a tela de cadastro (SecondActivity)
             startActivity(Intent(this, SecondActivity::class.java))
         }
     }

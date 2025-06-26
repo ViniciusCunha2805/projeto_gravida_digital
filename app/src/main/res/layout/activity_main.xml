@@ -22,17 +22,6 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
-        <TextView
-            android:id="@+id/textView3"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:text="Grávida Digital"
-            android:textAlignment="center"
-            android:textColor="#FFFFFF"
-            android:textColorLink="#FFFFFF"
-            android:textSize="24sp"
-            tools:layout_editor_absoluteX="0dp"
-            tools:layout_editor_absoluteY="0dp" />
     </LinearLayout>
 
     <CheckBox
@@ -41,7 +30,7 @@
         android:layout_height="0dp"
         android:layout_marginStart="11dp"
         android:layout_marginEnd="11dp"
-        android:layout_marginBottom="11dp"
+        android:layout_marginBottom="10dp"
         android:text="Aceito que tirem fotos minhas enquanto respondo as perguntas. "
         android:textAlignment="center"
         android:textSize="20sp"
@@ -54,7 +43,7 @@
         android:id="@+id/btCadastrar"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="11dp"
+        android:layout_marginTop="10dp"
         android:layout_marginEnd="29dp"
         android:text="Criar conta"
         app:layout_constraintEnd_toStartOf="@+id/btEntrar"
@@ -111,5 +100,19 @@
         app:layout_constraintBottom_toTopOf="@+id/editSenha2"
         app:layout_constraintStart_toStartOf="@+id/linearLayout23"
         app:layout_constraintTop_toBottomOf="@+id/linearLayout23" />
+
+    <TextView
+        android:id="@+id/textView3"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:text="Grávida Digital"
+        android:textAlignment="center"
+        android:textColor="#FFFFFF"
+        android:textColorLink="#FFFFFF"
+        android:textSize="24sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
