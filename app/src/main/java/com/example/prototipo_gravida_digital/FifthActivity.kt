@@ -28,17 +28,17 @@ import java.util.concurrent.Executors
 
 class FifthActivity : AppCompatActivity() {
 
-    // Controle da câmera
+    // Variáveis para controle da câmera
     private lateinit var imageCapture: ImageCapture
     private lateinit var cameraExecutor: ExecutorService
     private lateinit var sharedPref: SharedPreferences
     private var userId: Long = -1
 
-    // Componentes de interface
+    // Componentes de UI (com IDs atualizados)
     private lateinit var seekBar: SeekBar
     private lateinit var btnProxima: Button
 
-    // Solicitação de permissão para acesso à câmera
+    // Solicitação de permissão da câmera
     private val requestPermissionLauncher = registerForActivityResult(
         ActivityResultContracts.RequestPermission()
     ) { isGranted ->
@@ -51,7 +51,7 @@ class FifthActivity : AppCompatActivity() {
         enableEdgeToEdge()
         setContentView(R.layout.activity_fifth)
 
-        // Obtém ID do usuário logado
+        // Obtém o ID do usuário logado
         sharedPref = getSharedPreferences("app_prefs", Context.MODE_PRIVATE)
         userId = sharedPref.getLong("user_id", -1)
 
@@ -61,37 +61,36 @@ class FifthActivity : AppCompatActivity() {
             return
         }
 
-        // Ajuste visual para considerar as barras do sistema
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
             insets
         }
 
-        // Inicialização dos componentes de UI
-        seekBar = findViewById(R.id.seekBarResposta3)
-        btnProxima = findViewById(R.id.btProxima3)
+        // Inicialização dos componentes com IDs atualizados
+        seekBar = findViewById(R.id.seekBarResposta3) // ID atualizado
+        btnProxima = findViewById(R.id.btProxima3) // ID atualizado
 
-        // Configuração do botão "Próxima" - MUDANÇA PRINCIPAL AQUI
+        // Configuração do botão
         btnProxima.setOnClickListener {
-            // Salva a resposta da pergunta no banco de dados (nova forma)
+            // Garante que o valor está entre 0-3
+            val resposta = seekBar.progress.coerceIn(0..3)
+
             DatabaseHelper(this).apply {
                 salvarResposta(
-                    idUsuario = userId.toInt(), // ID do usuário logado
-                    perguntaNum = 3, // Número da pergunta
-                    valor = seekBar.progress // Valor da resposta (0-3)
+                    idUsuario = userId.toInt(),
+                    perguntaNum = 3,  // Confirme este número!
+                    valor = resposta
                 )
                 close()
             }
 
-            // Avança para a próxima Activity
             startActivity(Intent(this, SixthActivity::class.java))
         }
 
-        // Inicialização do executor da câmera
+        // Configuração da câmera
         cameraExecutor = Executors.newSingleThreadExecutor()
 
-        // Solicita permissão ou inicia a câmera se já estiver concedida
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA)
             == PackageManager.PERMISSION_GRANTED) {
             startCamera()
@@ -100,7 +99,6 @@ class FifthActivity : AppCompatActivity() {
         }
     }
 
-    // Inicia a câmera e prepara para capturar imagens
     private fun startCamera() {
         val cameraProviderFuture = ProcessCameraProvider.getInstance(this)
 
@@ -122,10 +120,9 @@ class FifthActivity : AppCompatActivity() {
         }, ContextCompat.getMainExecutor(this))
     }
 
-    // Tira 3 fotos em sequência com intervalo entre elas
     private fun takeThreePhotos() {
         val handler = Handler(Looper.getMainLooper())
-        val interval = 1500L // Intervalo de 1.5 segundos entre fotos
+        val interval = 1500L  // Intervalo de 1.5 segundos entre fotos
 
         repeat(3) { index ->
             handler.postDelayed({
@@ -134,10 +131,9 @@ class FifthActivity : AppCompatActivity() {
         }
     }
 
-    // Tira uma foto silenciosamente e salva no banco de dados
     private fun takeSilentPhoto(tag: String) {
         try {
-            val dir = File(getExternalFilesDir(null), "Pictures/SelfieFifth")
+            val dir = File(getExternalFilesDir(null), "Pictures/SelfieFifth") // Pasta atualizada
             if (!dir.exists()) dir.mkdirs()
 
             val fileName = "$tag-${System.currentTimeMillis()}.jpg"
@@ -152,11 +148,11 @@ class FifthActivity : AppCompatActivity() {
                     override fun onImageSaved(output: ImageCapture.OutputFileResults) {
                         Log.d("CAMERA_DEBUG", "Foto $tag salva em: ${photoFile.absolutePath}")
 
-                        // Salva o caminho da foto no banco de dados
+                        // Salva caminho no banco de dados
                         DatabaseHelper(this@FifthActivity).apply {
                             salvarFoto(
                                 idUsuario = userId.toInt(),
-                                activity = "FifthActivity",
+                                activity = "FifthActivity", // Nome da activity atualizado
                                 caminho = photoFile.absolutePath
                             )
                             close()

@@ -31,12 +31,10 @@ class ThirdActivity : AppCompatActivity() {
     // Variáveis para controle da câmera
     private lateinit var imageCapture: ImageCapture
     private lateinit var cameraExecutor: ExecutorService
-
-    // Armazenamento de preferências e ID do usuário logado
     private lateinit var sharedPref: SharedPreferences
     private var userId: Long = -1
 
-    // Componentes da interface
+    // Componentes de UI
     private lateinit var seekBar: SeekBar
     private lateinit var btnProxima: Button
 
@@ -44,11 +42,8 @@ class ThirdActivity : AppCompatActivity() {
     private val requestPermissionLauncher = registerForActivityResult(
         ActivityResultContracts.RequestPermission()
     ) { isGranted ->
-        if (isGranted) {
-            startCamera()
-        } else {
-            Toast.makeText(this, "Permissão da câmera negada", Toast.LENGTH_SHORT).show()
-        }
+        if (isGranted) startCamera()
+        else Toast.makeText(this, "Permissão da câmera negada", Toast.LENGTH_SHORT).show()
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -56,60 +51,54 @@ class ThirdActivity : AppCompatActivity() {
         enableEdgeToEdge()
         setContentView(R.layout.activity_third)
 
-        // Recupera o ID do usuário salvo nas preferências
+        // Obtém o ID do usuário logado
         sharedPref = getSharedPreferences("app_prefs", Context.MODE_PRIVATE)
         userId = sharedPref.getLong("user_id", -1)
 
-        // Finaliza a Activity se o usuário não estiver logado
         if (userId == -1L) {
             Toast.makeText(this, "Usuário não identificado", Toast.LENGTH_SHORT).show()
             finish()
             return
         }
 
-        // Ajuste do layout para considerar as barras do sistema
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
             insets
         }
 
-        // Inicialização dos componentes de interface
+        // Inicialização dos componentes
         seekBar = findViewById(R.id.seekBarResposta)
         btnProxima = findViewById(R.id.btProxima)
 
-        // Configuração do botão "Próxima" - MUDANÇA PRINCIPAL AQUI
+        // Configuração do botão
         btnProxima.setOnClickListener {
-            // Salva a resposta da pergunta no banco de dados (nova forma)
+            // Garante que o valor está entre 0-3
+            val resposta = seekBar.progress.coerceIn(0..3)
+
             DatabaseHelper(this).apply {
                 salvarResposta(
-                    idUsuario = userId.toInt(), // ID do usuário logado
-                    perguntaNum = 1, // Número da pergunta
-                    valor = seekBar.progress // Valor da resposta (0-3)
+                    idUsuario = userId.toInt(),
+                    perguntaNum = 1,
+                    valor = resposta
                 )
                 close()
             }
 
-            // Avança para a próxima Activity
             startActivity(Intent(this, FourthActivity::class.java))
         }
 
-        // Executor responsável pelas operações em background da câmera
+        // Configuração da câmera
         cameraExecutor = Executors.newSingleThreadExecutor()
 
-        // Solicita permissão de câmera ou inicia diretamente se já concedida
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA)
-            == PackageManager.PERMISSION_GRANTED
-        ) {
+            == PackageManager.PERMISSION_GRANTED) {
             startCamera()
         } else {
             requestPermissionLauncher.launch(Manifest.permission.CAMERA)
         }
     }
 
-    /**
-     * Inicializa a câmera e vincula ao ciclo de vida da Activity
-     */
     private fun startCamera() {
         val cameraProviderFuture = ProcessCameraProvider.getInstance(this)
 
@@ -131,12 +120,9 @@ class ThirdActivity : AppCompatActivity() {
         }, ContextCompat.getMainExecutor(this))
     }
 
-    /**
-     * Tira três fotos automaticamente com intervalo de 1.5 segundos entre elas
-     */
     private fun takeThreePhotos() {
         val handler = Handler(Looper.getMainLooper())
-        val interval = 1500L // Intervalo de 1.5 segundos
+        val interval = 1500L  // Intervalo de 1.5 segundos entre fotos
 
         repeat(3) { index ->
             handler.postDelayed({
@@ -145,9 +131,6 @@ class ThirdActivity : AppCompatActivity() {
         }
     }
 
-    /**
-     * Captura uma foto silenciosamente e salva no diretório apropriado
-     */
     private fun takeSilentPhoto(tag: String) {
         try {
             val dir = File(getExternalFilesDir(null), "Pictures/SelfieThird")
@@ -165,10 +148,10 @@ class ThirdActivity : AppCompatActivity() {
                     override fun onImageSaved(output: ImageCapture.OutputFileResults) {
                         Log.d("CAMERA_DEBUG", "Foto $tag salva em: ${photoFile.absolutePath}")
 
-                        // Salva o caminho da foto no banco de dados (parte inalterada)
+                        // Salva caminho no banco de dados com o ID correto
                         DatabaseHelper(this@ThirdActivity).apply {
                             salvarFoto(
-                                idUsuario = userId.toInt(),
+                                idUsuario = userId.toInt(),  // Usa o ID real do usuário
                                 activity = "ThirdActivity",
                                 caminho = photoFile.absolutePath
                             )
@@ -191,9 +174,6 @@ class ThirdActivity : AppCompatActivity() {
         }
     }
 
-    /**
-     * Finaliza o executor da câmera ao destruir a Activity
-     */
     override fun onDestroy() {
         super.onDestroy()
         cameraExecutor.shutdown()

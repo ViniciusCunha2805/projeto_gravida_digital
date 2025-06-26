@@ -4,6 +4,7 @@ import android.content.ContentValues
 import android.content.Context
 import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper
+import android.util.Log
 
 class DatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME, null, DATABASE_VERSION) {
 
@@ -95,7 +96,7 @@ class DatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME
     """, arrayOf(email, senha))
 
         return cursor.use {
-            if (it.moveToFirst()) it.getLong(0) else (-1L)
+            if (it.moveToFirst()) it.getLong(0) else (-1L)  // Corrige todos os erros
         }
     }
 
@@ -117,6 +118,22 @@ class DatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME
             put(COLUMN_VALOR_RESPOSTA, valor)
         }
         return db.insert(TABLE_RESPOSTAS, null, values)
+    }
+
+    fun buscarRespostas(idUsuario: Int): Map<Int, Int> {
+        val respostas = mutableMapOf<Int, Int>()
+        val db = readableDatabase
+        val cursor = db.rawQuery("""
+            SELECT $COLUMN_PERGUNTA_NUM, $COLUMN_VALOR_RESPOSTA 
+            FROM $TABLE_RESPOSTAS 
+            WHERE $COLUMN_ID_USUARIO = ?
+        """, arrayOf(idUsuario.toString()))
+
+        while (cursor.moveToNext()) {
+            respostas[cursor.getInt(0)] = cursor.getInt(1)
+        }
+        cursor.close()
+        return respostas
     }
 
     // Métodos para fotos (inalterados) --------------------------------------

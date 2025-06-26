@@ -28,17 +28,17 @@ import java.util.concurrent.Executors
 
 class NinthActivity : AppCompatActivity() {
 
-    // Controle da câmera
+    // Variáveis para controle da câmera
     private lateinit var imageCapture: ImageCapture
     private lateinit var cameraExecutor: ExecutorService
     private lateinit var sharedPref: SharedPreferences
     private var userId: Long = -1
 
-    // Componentes da interface
+    // Componentes de UI (IDs atualizados)
     private lateinit var seekBar: SeekBar
     private lateinit var btnProxima: Button
 
-    // Gerenciamento de permissão para câmera
+    // Solicitação de permissão da câmera
     private val requestPermissionLauncher = registerForActivityResult(
         ActivityResultContracts.RequestPermission()
     ) { isGranted ->
@@ -61,37 +61,36 @@ class NinthActivity : AppCompatActivity() {
             return
         }
 
-        // Ajusta o padding da view para as barras do sistema
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
             insets
         }
 
-        // Inicializa componentes UI
-        seekBar = findViewById(R.id.seekBarResposta7)
-        btnProxima = findViewById(R.id.btProxima7)
+        // Inicialização dos componentes com IDs atualizados
+        seekBar = findViewById(R.id.seekBarResposta7) // ID atualizado
+        btnProxima = findViewById(R.id.btProxima7) // ID atualizado
 
-        // Configuração do botão "Próxima" - MUDANÇA PRINCIPAL AQUI
+        // Configuração do botão
         btnProxima.setOnClickListener {
-            // Salva a resposta da pergunta no banco de dados (nova forma)
+            // Garante que o valor está entre 0-3
+            val resposta = seekBar.progress.coerceIn(0..3)
+
             DatabaseHelper(this).apply {
                 salvarResposta(
-                    idUsuario = userId.toInt(), // ID do usuário logado
-                    perguntaNum = 7, // Número da pergunta
-                    valor = seekBar.progress // Valor da resposta (0-3)
+                    idUsuario = userId.toInt(),
+                    perguntaNum = 7,  // Confirme este número!
+                    valor = resposta
                 )
                 close()
             }
 
-            // Avança para a próxima Activity
             startActivity(Intent(this, TenthActivity::class.java))
         }
 
-        // Inicializa executor da câmera
+        // Configuração da câmera
         cameraExecutor = Executors.newSingleThreadExecutor()
 
-        // Verifica permissão e inicia câmera
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA)
             == PackageManager.PERMISSION_GRANTED) {
             startCamera()
@@ -123,7 +122,7 @@ class NinthActivity : AppCompatActivity() {
 
     private fun takeThreePhotos() {
         val handler = Handler(Looper.getMainLooper())
-        val interval = 1500L // 1.5 segundos de intervalo entre fotos
+        val interval = 1500L  // Intervalo de 1.5 segundos entre fotos
 
         repeat(3) { index ->
             handler.postDelayed({
@@ -134,7 +133,7 @@ class NinthActivity : AppCompatActivity() {
 
     private fun takeSilentPhoto(tag: String) {
         try {
-            val dir = File(getExternalFilesDir(null), "Pictures/SelfieNinth")
+            val dir = File(getExternalFilesDir(null), "Pictures/SelfieNinth") // Pasta atualizada
             if (!dir.exists()) dir.mkdirs()
 
             val fileName = "$tag-${System.currentTimeMillis()}.jpg"
@@ -149,10 +148,11 @@ class NinthActivity : AppCompatActivity() {
                     override fun onImageSaved(output: ImageCapture.OutputFileResults) {
                         Log.d("CAMERA_DEBUG", "Foto $tag salva em: ${photoFile.absolutePath}")
 
-                        DatabaseHelper(this@NinthActivity).apply {
+                        // Salva caminho no banco de dados
+                        DatabaseHelper(this@NinthActivity).apply{
                             salvarFoto(
                                 idUsuario = userId.toInt(),
-                                activity = "NinthActivity",
+                                activity = "NinthActivity", // Nome da activity atualizado
                                 caminho = photoFile.absolutePath
                             )
                             close()
