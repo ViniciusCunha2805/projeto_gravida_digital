@@ -60,10 +60,6 @@ class MainActivity : AppCompatActivity() {
         }
 
         btnCadastrar.setOnClickListener {
-            if (!checkTermos.isChecked) {
-                Toast.makeText(this, "Aceite os termos para criar uma conta", Toast.LENGTH_SHORT).show()
-                return@setOnClickListener
-            }
             startActivity(Intent(this, SecondActivity::class.java))
         }
     }
