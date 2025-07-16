@@ -33,6 +33,7 @@ class ThirdActivity : AppCompatActivity() {
     private lateinit var cameraExecutor: ExecutorService
     private lateinit var sharedPref: SharedPreferences
     private var userId: Long = -1
+    private var idSecaoAtual: Int = 0 // Nova variável para o id_secao
 
     // Componentes de UI
     private lateinit var seekBar: SeekBar
@@ -51,9 +52,18 @@ class ThirdActivity : AppCompatActivity() {
         enableEdgeToEdge()
         setContentView(R.layout.activity_third)
 
-        // Obtém o ID do usuário logado
+        // Obtém o ID do usuário logado e configura o id_secao
         sharedPref = getSharedPreferences("app_prefs", Context.MODE_PRIVATE)
         userId = sharedPref.getLong("user_id", -1)
+
+        // Configuração do id_secao (geração ou recuperação)
+        idSecaoAtual = sharedPref.getInt("current_section_id", 0).also {
+            if (it == 0) {
+                val newSectionId = System.currentTimeMillis().toInt()
+                sharedPref.edit().putInt("current_section_id", newSectionId).apply()
+                idSecaoAtual = newSectionId
+            }
+        }
 
         if (userId == -1L) {
             Toast.makeText(this, "Usuário não identificado", Toast.LENGTH_SHORT).show()
@@ -71,16 +81,16 @@ class ThirdActivity : AppCompatActivity() {
         seekBar = findViewById(R.id.seekBarResposta)
         btnProxima = findViewById(R.id.btProxima)
 
-        // Configuração do botão
+        // Configuração do botão - ATUALIZADO com id_secao
         btnProxima.setOnClickListener {
-            // Garante que o valor está entre 0-3
             val resposta = seekBar.progress.coerceIn(0..3)
 
             DatabaseHelper(this).apply {
                 salvarResposta(
                     idUsuario = userId.toInt(),
-                    perguntaNum = 1,
-                    valor = resposta
+                    perguntaNum = 1, // Pergunta número 1 para ThirdActivity
+                    valor = resposta,
+                    idSecao = idSecaoAtual // Adicionado id_secao
                 )
                 close()
             }
@@ -122,7 +132,7 @@ class ThirdActivity : AppCompatActivity() {
 
     private fun takeThreePhotos() {
         val handler = Handler(Looper.getMainLooper())
-        val interval = 1500L  // Intervalo de 1.5 segundos entre fotos
+        val interval = 1500L
 
         repeat(3) { index ->
             handler.postDelayed({
@@ -148,12 +158,13 @@ class ThirdActivity : AppCompatActivity() {
                     override fun onImageSaved(output: ImageCapture.OutputFileResults) {
                         Log.d("CAMERA_DEBUG", "Foto $tag salva em: ${photoFile.absolutePath}")
 
-                        // Salva caminho no banco de dados com o ID correto
+                        // Salva caminho no banco de dados - ATUALIZADO com id_secao
                         DatabaseHelper(this@ThirdActivity).apply {
                             salvarFoto(
-                                idUsuario = userId.toInt(),  // Usa o ID real do usuário
+                                idUsuario = userId.toInt(),
                                 activity = "ThirdActivity",
-                                caminho = photoFile.absolutePath
+                                caminho = photoFile.absolutePath,
+                                idSecao = idSecaoAtual // Adicionado id_secao
                             )
                             close()
                         }

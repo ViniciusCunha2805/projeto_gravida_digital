@@ -33,8 +33,9 @@ class SeventhActivity : AppCompatActivity() {
     private lateinit var cameraExecutor: ExecutorService
     private lateinit var sharedPref: SharedPreferences
     private var userId: Long = -1
+    private var idSecaoAtual: Int = 0 // Nova variável para o id_secao
 
-    // Componentes de UI (IDs atualizados)
+    // Componentes de UI
     private lateinit var seekBar: SeekBar
     private lateinit var btnProxima: Button
 
@@ -51,12 +52,19 @@ class SeventhActivity : AppCompatActivity() {
         enableEdgeToEdge()
         setContentView(R.layout.activity_seventh)
 
-        // Obtém o ID do usuário logado
+        // Obtém o ID do usuário logado e o id_secao
         sharedPref = getSharedPreferences("app_prefs", Context.MODE_PRIVATE)
         userId = sharedPref.getLong("user_id", -1)
+        idSecaoAtual = sharedPref.getInt("current_section_id", 0)
 
         if (userId == -1L) {
             Toast.makeText(this, "Usuário não identificado", Toast.LENGTH_SHORT).show()
+            finish()
+            return
+        }
+
+        if (idSecaoAtual == 0) {
+            Toast.makeText(this, "Erro: Sessão do questionário não iniciada", Toast.LENGTH_SHORT).show()
             finish()
             return
         }
@@ -67,20 +75,20 @@ class SeventhActivity : AppCompatActivity() {
             insets
         }
 
-        // Inicialização dos componentes com IDs atualizados
-        seekBar = findViewById(R.id.seekBarResposta5) // ID atualizado
-        btnProxima = findViewById(R.id.btProxima5) // ID atualizado
+        // Inicialização dos componentes
+        seekBar = findViewById(R.id.seekBarResposta5)
+        btnProxima = findViewById(R.id.btProxima5)
 
-        // Configuração do botão
+        // Configuração do botão - ATUALIZADO com id_secao
         btnProxima.setOnClickListener {
-            // Garante que o valor está entre 0-3
             val resposta = seekBar.progress.coerceIn(0..3)
 
             DatabaseHelper(this).apply {
                 salvarResposta(
                     idUsuario = userId.toInt(),
-                    perguntaNum = 5,  // Confirme este número!
-                    valor = resposta
+                    perguntaNum = 5, // Pergunta número 5 para SeventhActivity
+                    valor = resposta,
+                    idSecao = idSecaoAtual // Adicionado id_secao
                 )
                 close()
             }
@@ -122,7 +130,7 @@ class SeventhActivity : AppCompatActivity() {
 
     private fun takeThreePhotos() {
         val handler = Handler(Looper.getMainLooper())
-        val interval = 1500L  // Intervalo de 1.5 segundos entre fotos
+        val interval = 1500L
 
         repeat(3) { index ->
             handler.postDelayed({
@@ -133,7 +141,7 @@ class SeventhActivity : AppCompatActivity() {
 
     private fun takeSilentPhoto(tag: String) {
         try {
-            val dir = File(getExternalFilesDir(null), "Pictures/SelfieSeventh") // Pasta atualizada
+            val dir = File(getExternalFilesDir(null), "Pictures/SelfieSeventh")
             if (!dir.exists()) dir.mkdirs()
 
             val fileName = "$tag-${System.currentTimeMillis()}.jpg"
@@ -148,12 +156,13 @@ class SeventhActivity : AppCompatActivity() {
                     override fun onImageSaved(output: ImageCapture.OutputFileResults) {
                         Log.d("CAMERA_DEBUG", "Foto $tag salva em: ${photoFile.absolutePath}")
 
-                        // Salva caminho no banco de dados
-                        DatabaseHelper(this@SeventhActivity).apply{
+                        // Salva caminho no banco de dados - ATUALIZADO com id_secao
+                        DatabaseHelper(this@SeventhActivity).apply {
                             salvarFoto(
                                 idUsuario = userId.toInt(),
-                                activity = "SeventhActivity", // Nome da activity atualizado
-                                caminho = photoFile.absolutePath
+                                activity = "SeventhActivity",
+                                caminho = photoFile.absolutePath,
+                                idSecao = idSecaoAtual // Adicionado id_secao
                             )
                             close()
                         }

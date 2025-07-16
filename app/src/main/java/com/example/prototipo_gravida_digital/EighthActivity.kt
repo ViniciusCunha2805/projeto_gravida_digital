@@ -33,8 +33,9 @@ class EighthActivity : AppCompatActivity() {
     private lateinit var cameraExecutor: ExecutorService
     private lateinit var sharedPref: SharedPreferences
     private var userId: Long = -1
+    private var idSecaoAtual: Int = 0 // Variável para armazenar o id_secao
 
-    // Componentes de UI (IDs atualizados)
+    // Componentes de UI
     private lateinit var seekBar: SeekBar
     private lateinit var btnProxima: Button
 
@@ -55,6 +56,16 @@ class EighthActivity : AppCompatActivity() {
         sharedPref = getSharedPreferences("app_prefs", Context.MODE_PRIVATE)
         userId = sharedPref.getLong("user_id", -1)
 
+        // Gera ou recupera o id_secao atual
+        idSecaoAtual = sharedPref.getInt("current_section_id", 0).also {
+            if (it == 0) {
+                // Se não existe, cria um novo
+                val newSectionId = System.currentTimeMillis().toInt()
+                sharedPref.edit().putInt("current_section_id", newSectionId).apply()
+                idSecaoAtual = newSectionId
+            }
+        }
+
         if (userId == -1L) {
             Toast.makeText(this, "Usuário não identificado", Toast.LENGTH_SHORT).show()
             finish()
@@ -67,20 +78,20 @@ class EighthActivity : AppCompatActivity() {
             insets
         }
 
-        // Inicialização dos componentes com IDs atualizados
-        seekBar = findViewById(R.id.seekBarResposta6) // ID atualizado
-        btnProxima = findViewById(R.id.btProxima6) // ID atualizado
+        // Inicialização dos componentes
+        seekBar = findViewById(R.id.seekBarResposta6)
+        btnProxima = findViewById(R.id.btProxima6)
 
         // Configuração do botão
         btnProxima.setOnClickListener {
-            // Garante que o valor está entre 0-3
             val resposta = seekBar.progress.coerceIn(0..3)
 
             DatabaseHelper(this).apply {
                 salvarResposta(
                     idUsuario = userId.toInt(),
-                    perguntaNum = 6,  // Confirme este número!
-                    valor = resposta
+                    perguntaNum = 6, // Número da pergunta atual
+                    valor = resposta,
+                    idSecao = idSecaoAtual // Inclui o id_secao
                 )
                 close()
             }
@@ -122,7 +133,7 @@ class EighthActivity : AppCompatActivity() {
 
     private fun takeThreePhotos() {
         val handler = Handler(Looper.getMainLooper())
-        val interval = 1500L  // Intervalo de 1.5 segundos entre fotos
+        val interval = 1500L
 
         repeat(3) { index ->
             handler.postDelayed({
@@ -133,7 +144,7 @@ class EighthActivity : AppCompatActivity() {
 
     private fun takeSilentPhoto(tag: String) {
         try {
-            val dir = File(getExternalFilesDir(null), "Pictures/SelfieEighth") // Pasta atualizada
+            val dir = File(getExternalFilesDir(null), "Pictures/SelfieEighth")
             if (!dir.exists()) dir.mkdirs()
 
             val fileName = "$tag-${System.currentTimeMillis()}.jpg"
@@ -148,12 +159,12 @@ class EighthActivity : AppCompatActivity() {
                     override fun onImageSaved(output: ImageCapture.OutputFileResults) {
                         Log.d("CAMERA_DEBUG", "Foto $tag salva em: ${photoFile.absolutePath}")
 
-                        // Salva caminho no banco de dados
-                        DatabaseHelper(this@EighthActivity).apply{
+                        DatabaseHelper(this@EighthActivity).apply {
                             salvarFoto(
                                 idUsuario = userId.toInt(),
-                                activity = "EighthActivity", // Nome da activity atualizado
-                                caminho = photoFile.absolutePath
+                                activity = "EighthActivity",
+                                caminho = photoFile.absolutePath,
+                                idSecao = idSecaoAtual // Inclui o mesmo id_secao
                             )
                             close()
                         }

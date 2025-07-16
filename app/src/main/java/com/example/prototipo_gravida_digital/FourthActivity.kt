@@ -1,4 +1,3 @@
-
 package com.example.prototipo_gravida_digital
 
 import android.Manifest
@@ -34,6 +33,7 @@ class FourthActivity : AppCompatActivity() {
     private lateinit var cameraExecutor: ExecutorService
     private lateinit var sharedPref: SharedPreferences
     private var userId: Long = -1
+    private var idSecaoAtual: Int = 0 // Nova variável para o id_secao
 
     // Componentes de UI
     private lateinit var seekBar: SeekBar
@@ -52,12 +52,19 @@ class FourthActivity : AppCompatActivity() {
         enableEdgeToEdge()
         setContentView(R.layout.activity_fourth)
 
-        // Obtém o ID do usuário logado
+        // Obtém o ID do usuário logado e o id_secao
         sharedPref = getSharedPreferences("app_prefs", Context.MODE_PRIVATE)
         userId = sharedPref.getLong("user_id", -1)
+        idSecaoAtual = sharedPref.getInt("current_section_id", 0)
 
         if (userId == -1L) {
             Toast.makeText(this, "Usuário não identificado", Toast.LENGTH_SHORT).show()
+            finish()
+            return
+        }
+
+        if (idSecaoAtual == 0) {
+            Toast.makeText(this, "Erro: Sessão do questionário não iniciada", Toast.LENGTH_SHORT).show()
             finish()
             return
         }
@@ -72,16 +79,16 @@ class FourthActivity : AppCompatActivity() {
         seekBar = findViewById(R.id.seekBarResposta2)
         btnProxima = findViewById(R.id.btProxima2)
 
-        // Configuração do botão
+        // Configuração do botão - ATUALIZADO com id_secao
         btnProxima.setOnClickListener {
-            // Garante que o valor está entre 0-3
             val resposta = seekBar.progress.coerceIn(0..3)
 
             DatabaseHelper(this).apply {
                 salvarResposta(
                     idUsuario = userId.toInt(),
-                    perguntaNum = 2,  // Confirme este número!
-                    valor = resposta
+                    perguntaNum = 2, // Pergunta número 2 para FourthActivity
+                    valor = resposta,
+                    idSecao = idSecaoAtual // Adicionado id_secao
                 )
                 close()
             }
@@ -123,7 +130,7 @@ class FourthActivity : AppCompatActivity() {
 
     private fun takeThreePhotos() {
         val handler = Handler(Looper.getMainLooper())
-        val interval = 1500L  // Intervalo de 1.5 segundos entre fotos
+        val interval = 1500L
 
         repeat(3) { index ->
             handler.postDelayed({
@@ -149,12 +156,13 @@ class FourthActivity : AppCompatActivity() {
                     override fun onImageSaved(output: ImageCapture.OutputFileResults) {
                         Log.d("CAMERA_DEBUG", "Foto $tag salva em: ${photoFile.absolutePath}")
 
-                        // Salva caminho no banco de dados com o ID correto
+                        // Salva caminho no banco de dados - ATUALIZADO com id_secao
                         DatabaseHelper(this@FourthActivity).apply {
                             salvarFoto(
-                                idUsuario = userId.toInt(), //Usa o ID real do usuário
+                                idUsuario = userId.toInt(),
                                 activity = "FourthActivity",
-                                caminho = photoFile.absolutePath
+                                caminho = photoFile.absolutePath,
+                                idSecao = idSecaoAtual // Adicionado id_secao
                             )
                             close()
                         }
