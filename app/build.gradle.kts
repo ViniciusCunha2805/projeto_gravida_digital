@@ -45,6 +45,9 @@ dependencies {
     implementation(libs.androidx.activity)
     implementation(libs.androidx.constraintlayout)
 
+    implementation("com.squareup.okhttp3:okhttp:4.12.0")
+
+
     // Dependências do CameraX (adicionadas corretamente)
     implementation(libs.androidx.camera.core)
     implementation(libs.androidx.camera.camera2)

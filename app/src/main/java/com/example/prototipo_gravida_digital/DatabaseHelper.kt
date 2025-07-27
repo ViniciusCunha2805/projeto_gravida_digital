@@ -5,12 +5,14 @@ import android.content.Context
 import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper
 import android.util.Log
+import java.text.SimpleDateFormat
+import java.util.*
 
 class DatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME, null, DATABASE_VERSION), AutoCloseable {
 
     companion object {
         private const val DATABASE_NAME = "gravida_digital.db"
-        private const val DATABASE_VERSION = 2
+        private const val DATABASE_VERSION = 3
 
         // Tabela de usuários
         const val TABLE_USUARIOS = "usuarios"
@@ -34,10 +36,13 @@ class DatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME
         const val COLUMN_ACTIVITY = "activity"
         const val COLUMN_CAMINHO = "caminho"
         const val COLUMN_ID_SECAO_FOTO = "id_secao"
+
+        // Tabela de seções
+        const val TABLE_SECOES = "secoes"
+        const val COLUMN_DATA_REALIZACAO = "data_realizacao"
     }
 
     override fun onCreate(db: SQLiteDatabase) {
-        // 1. Tabela de usuários
         db.execSQL("""
             CREATE TABLE $TABLE_USUARIOS (
                 $COLUMN_ID INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -46,8 +51,6 @@ class DatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME
                 $COLUMN_SENHA TEXT NOT NULL
             )
         """)
-
-        // 2. Tabela de respostas (com id_secao)
         db.execSQL("""
             CREATE TABLE $TABLE_RESPOSTAS (
                 $COLUMN_ID_RESPOSTA INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -59,8 +62,6 @@ class DatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME
                 FOREIGN KEY ($COLUMN_ID_USUARIO) REFERENCES $TABLE_USUARIOS($COLUMN_ID)
             )
         """)
-
-        // 3. Tabela de fotos (com id_secao)
         db.execSQL("""
             CREATE TABLE $TABLE_FOTOS (
                 $COLUMN_ID_FOTO INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -71,16 +72,25 @@ class DatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME
                 FOREIGN KEY ($COLUMN_ID_USUARIO) REFERENCES $TABLE_USUARIOS($COLUMN_ID)
             )
         """)
+        db.execSQL("""
+            CREATE TABLE $TABLE_SECOES (
+                $COLUMN_ID_SECAO INTEGER PRIMARY KEY,
+                $COLUMN_ID_USUARIO INTEGER NOT NULL,
+                $COLUMN_DATA_REALIZACAO TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                FOREIGN KEY ($COLUMN_ID_USUARIO) REFERENCES $TABLE_USUARIOS($COLUMN_ID)
+            )
+        """)
     }
 
     override fun onUpgrade(db: SQLiteDatabase, oldVersion: Int, newVersion: Int) {
-        db.execSQL("DROP TABLE IF EXISTS $TABLE_USUARIOS")
-        db.execSQL("DROP TABLE IF EXISTS $TABLE_RESPOSTAS")
         db.execSQL("DROP TABLE IF EXISTS $TABLE_FOTOS")
+        db.execSQL("DROP TABLE IF EXISTS $TABLE_RESPOSTAS")
+        db.execSQL("DROP TABLE IF EXISTS $TABLE_USUARIOS")
+        db.execSQL("DROP TABLE IF EXISTS $TABLE_SECOES")
         onCreate(db)
     }
 
-    // Métodos para usuários
+    // === USUÁRIOS ===
     fun cadastrarUsuario(nome: String, email: String, senha: String): Long {
         val db = writableDatabase
         val values = ContentValues().apply {
@@ -97,10 +107,7 @@ class DatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME
             SELECT $COLUMN_ID FROM $TABLE_USUARIOS 
             WHERE $COLUMN_EMAIL = ? AND $COLUMN_SENHA = ?
         """, arrayOf(email, senha))
-
-        return cursor.use {
-            if (it.moveToFirst()) it.getLong(0) else -1L
-        }
+        return cursor.use { if (it.moveToFirst()) it.getLong(0) else -1L }
     }
 
     fun verificarEmailExistente(email: String): Boolean {
@@ -112,7 +119,7 @@ class DatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME
         return cursor.use { it.count > 0 }
     }
 
-    // Métodos para respostas
+    // === RESPOSTAS ===
     fun salvarResposta(idUsuario: Int, perguntaNum: Int, valor: Int, idSecao: Int): Long {
         val db = writableDatabase
         val values = ContentValues().apply {
@@ -156,7 +163,7 @@ class DatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME
         return respostas
     }
 
-    // Métodos para fotos
+    // === FOTOS ===
     fun salvarFoto(idUsuario: Int, activity: String, caminho: String, idSecao: Int): Long {
         val db = writableDatabase
         val values = ContentValues().apply {
@@ -182,6 +189,22 @@ class DatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME
         }
         cursor.close()
         return fotos
+    }
+
+    // === SEÇÕES ===
+    fun registrarSecao(idSecao: Int, idUsuario: Int): Long {
+        val db = writableDatabase
+        val sdf = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault())
+        sdf.timeZone = TimeZone.getTimeZone("America/Sao_Paulo")
+        val dataFormatada = sdf.format(Date())
+
+        val values = ContentValues().apply {
+            put(COLUMN_ID_SECAO, idSecao)
+            put(COLUMN_ID_USUARIO, idUsuario)
+            put(COLUMN_DATA_REALIZACAO, dataFormatada)
+        }
+
+        return db.insert(TABLE_SECOES, null, values)
     }
 
     override fun close() {

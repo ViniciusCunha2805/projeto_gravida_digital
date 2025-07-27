@@ -15,31 +15,28 @@ import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.content.ContextCompat
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
 import androidx.camera.core.CameraSelector
 import androidx.camera.core.ImageCapture
 import androidx.camera.core.ImageCaptureException
 import androidx.camera.lifecycle.ProcessCameraProvider
+import androidx.core.content.ContextCompat
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
 import java.io.File
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
 
 class FifthActivity : AppCompatActivity() {
 
-    // Variáveis para controle da câmera
     private lateinit var imageCapture: ImageCapture
     private lateinit var cameraExecutor: ExecutorService
     private lateinit var sharedPref: SharedPreferences
     private var userId: Long = -1
-    private var idSecaoAtual: Int = 0 // Nova variável para o id_secao
+    private var idSecaoAtual: Int = 0
 
-    // Componentes de UI
     private lateinit var seekBar: SeekBar
     private lateinit var btnProxima: Button
 
-    // Solicitação de permissão da câmera
     private val requestPermissionLauncher = registerForActivityResult(
         ActivityResultContracts.RequestPermission()
     ) { isGranted ->
@@ -52,7 +49,7 @@ class FifthActivity : AppCompatActivity() {
         enableEdgeToEdge()
         setContentView(R.layout.activity_fifth)
 
-        // Obtém o ID do usuário logado e o id_secao
+        // Recupera SharedPreferences e IDs
         sharedPref = getSharedPreferences("app_prefs", Context.MODE_PRIVATE)
         userId = sharedPref.getLong("user_id", -1)
         idSecaoAtual = sharedPref.getInt("current_section_id", 0)
@@ -75,20 +72,18 @@ class FifthActivity : AppCompatActivity() {
             insets
         }
 
-        // Inicialização dos componentes
         seekBar = findViewById(R.id.seekBarResposta3)
         btnProxima = findViewById(R.id.btProxima3)
 
-        // Configuração do botão - ATUALIZADO com id_secao
         btnProxima.setOnClickListener {
             val resposta = seekBar.progress.coerceIn(0..3)
 
             DatabaseHelper(this).apply {
                 salvarResposta(
                     idUsuario = userId.toInt(),
-                    perguntaNum = 3, // Pergunta número 3 para FifthActivity
+                    perguntaNum = 3,
                     valor = resposta,
-                    idSecao = idSecaoAtual // Adicionado id_secao
+                    idSecao = idSecaoAtual
                 )
                 close()
             }
@@ -96,7 +91,6 @@ class FifthActivity : AppCompatActivity() {
             startActivity(Intent(this, SixthActivity::class.java))
         }
 
-        // Configuração da câmera
         cameraExecutor = Executors.newSingleThreadExecutor()
 
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA)
@@ -155,14 +149,14 @@ class FifthActivity : AppCompatActivity() {
                 object : ImageCapture.OnImageSavedCallback {
                     override fun onImageSaved(output: ImageCapture.OutputFileResults) {
                         Log.d("CAMERA_DEBUG", "Foto $tag salva em: ${photoFile.absolutePath}")
+                        Log.d("DEBUG_ID", "Salvando com userId = $userId, idSecao = $idSecaoAtual")
 
-                        // Salva caminho no banco de dados - ATUALIZADO com id_secao
                         DatabaseHelper(this@FifthActivity).apply {
                             salvarFoto(
                                 idUsuario = userId.toInt(),
                                 activity = "FifthActivity",
                                 caminho = photoFile.absolutePath,
-                                idSecao = idSecaoAtual // Adicionado id_secao
+                                idSecao = idSecaoAtual
                             )
                             close()
                         }

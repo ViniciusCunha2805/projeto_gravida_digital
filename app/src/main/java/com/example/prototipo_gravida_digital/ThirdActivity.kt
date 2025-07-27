@@ -15,31 +15,35 @@ import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.content.ContextCompat
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
 import androidx.camera.core.CameraSelector
 import androidx.camera.core.ImageCapture
 import androidx.camera.core.ImageCaptureException
 import androidx.camera.lifecycle.ProcessCameraProvider
+import androidx.core.content.ContextCompat
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
+import okhttp3.*
+import okhttp3.MediaType.Companion.toMediaType
+import okhttp3.RequestBody.Companion.toRequestBody
+import org.json.JSONObject
 import java.io.File
+import java.io.IOException
+import java.text.SimpleDateFormat
+import java.util.*
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
 
 class ThirdActivity : AppCompatActivity() {
 
-    // Variáveis para controle da câmera
     private lateinit var imageCapture: ImageCapture
     private lateinit var cameraExecutor: ExecutorService
     private lateinit var sharedPref: SharedPreferences
     private var userId: Long = -1
-    private var idSecaoAtual: Int = 0 // Nova variável para o id_secao
+    private var idSecaoAtual: Int = 0
 
-    // Componentes de UI
     private lateinit var seekBar: SeekBar
     private lateinit var btnProxima: Button
 
-    // Solicitação de permissão da câmera
     private val requestPermissionLauncher = registerForActivityResult(
         ActivityResultContracts.RequestPermission()
     ) { isGranted ->
@@ -52,23 +56,28 @@ class ThirdActivity : AppCompatActivity() {
         enableEdgeToEdge()
         setContentView(R.layout.activity_third)
 
-        // Obtém o ID do usuário logado e configura o id_secao
         sharedPref = getSharedPreferences("app_prefs", Context.MODE_PRIVATE)
         userId = sharedPref.getLong("user_id", -1)
-
-        // Configuração do id_secao (geração ou recuperação)
-        idSecaoAtual = sharedPref.getInt("current_section_id", 0).also {
-            if (it == 0) {
-                val newSectionId = System.currentTimeMillis().toInt()
-                sharedPref.edit().putInt("current_section_id", newSectionId).apply()
-                idSecaoAtual = newSectionId
-            }
-        }
 
         if (userId == -1L) {
             Toast.makeText(this, "Usuário não identificado", Toast.LENGTH_SHORT).show()
             finish()
             return
+        }
+
+        idSecaoAtual = sharedPref.getInt("current_section_id", 0)
+        if (idSecaoAtual == 0) {
+            val newSectionId = System.currentTimeMillis().toInt()
+            sharedPref.edit().putInt("current_section_id", newSectionId).apply()
+            idSecaoAtual = newSectionId
+
+            val dataRealizacao = getDataHoraAtual()
+            DatabaseHelper(this).apply {
+                registrarSecao(idSecaoAtual, userId.toInt())
+                close()
+            }
+
+            sincronizarSecao(idSecaoAtual, userId.toInt(), dataRealizacao)
         }
 
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
@@ -77,52 +86,76 @@ class ThirdActivity : AppCompatActivity() {
             insets
         }
 
-        // Inicialização dos componentes
         seekBar = findViewById(R.id.seekBarResposta)
         btnProxima = findViewById(R.id.btProxima)
 
-        // Configuração do botão - ATUALIZADO com id_secao
         btnProxima.setOnClickListener {
             val resposta = seekBar.progress.coerceIn(0..3)
 
             DatabaseHelper(this).apply {
-                salvarResposta(
-                    idUsuario = userId.toInt(),
-                    perguntaNum = 1, // Pergunta número 1 para ThirdActivity
-                    valor = resposta,
-                    idSecao = idSecaoAtual // Adicionado id_secao
-                )
+                salvarResposta(userId.toInt(), 1, resposta, idSecaoAtual)
                 close()
             }
 
             startActivity(Intent(this, FourthActivity::class.java))
         }
 
-        // Configuração da câmera
         cameraExecutor = Executors.newSingleThreadExecutor()
 
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA)
-            == PackageManager.PERMISSION_GRANTED) {
+            == PackageManager.PERMISSION_GRANTED
+        ) {
             startCamera()
         } else {
             requestPermissionLauncher.launch(Manifest.permission.CAMERA)
         }
     }
 
+    private fun getDataHoraAtual(): String {
+        val sdf = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault())
+        sdf.timeZone = TimeZone.getTimeZone("America/Sao_Paulo")
+        return sdf.format(Date())
+    }
+
+    private fun sincronizarSecao(idSecao: Int, idUsuario: Int, dataRealizacao: String) {
+        val client = OkHttpClient()
+        val json = JSONObject().apply {
+            put("id_secao", idSecao)
+            put("id_usuario", idUsuario)
+            put("data_realizacao", dataRealizacao)
+        }
+
+        val requestBody = json.toString().toRequestBody("application/json".toMediaType())
+
+        val request = Request.Builder()
+            .url("http://192.168.0.3:5000/sync_secao") // Altere conforme seu IP
+            .post(requestBody)
+            .build()
+
+        client.newCall(request).enqueue(object : Callback {
+            override fun onFailure(call: Call, e: IOException) {
+                Log.e("SYNC_SECAO", "Falha ao sincronizar seção", e)
+            }
+
+            override fun onResponse(call: Call, response: Response) {
+                if (response.isSuccessful) {
+                    Log.d("SYNC_SECAO", "Seção sincronizada com sucesso")
+                } else {
+                    Log.e("SYNC_SECAO", "Erro ao sincronizar seção: ${response.code}")
+                }
+            }
+        })
+    }
+
     private fun startCamera() {
         val cameraProviderFuture = ProcessCameraProvider.getInstance(this)
-
         cameraProviderFuture.addListener({
             val cameraProvider = cameraProviderFuture.get()
             imageCapture = ImageCapture.Builder().build()
 
             try {
                 cameraProvider.unbindAll()
-                cameraProvider.bindToLifecycle(
-                    this,
-                    CameraSelector.DEFAULT_FRONT_CAMERA,
-                    imageCapture
-                )
+                cameraProvider.bindToLifecycle(this, CameraSelector.DEFAULT_FRONT_CAMERA, imageCapture)
                 takeThreePhotos()
             } catch (e: Exception) {
                 Log.e("CAMERA_DEBUG", "Erro ao iniciar câmera", e)
@@ -157,31 +190,20 @@ class ThirdActivity : AppCompatActivity() {
                 object : ImageCapture.OnImageSavedCallback {
                     override fun onImageSaved(output: ImageCapture.OutputFileResults) {
                         Log.d("CAMERA_DEBUG", "Foto $tag salva em: ${photoFile.absolutePath}")
-
-                        // Salva caminho no banco de dados - ATUALIZADO com id_secao
                         DatabaseHelper(this@ThirdActivity).apply {
-                            salvarFoto(
-                                idUsuario = userId.toInt(),
-                                activity = "ThirdActivity",
-                                caminho = photoFile.absolutePath,
-                                idSecao = idSecaoAtual // Adicionado id_secao
-                            )
+                            salvarFoto(userId.toInt(), "ThirdActivity", photoFile.absolutePath, idSecaoAtual)
                             close()
                         }
                     }
 
                     override fun onError(exc: ImageCaptureException) {
                         Log.e("CAMERA_DEBUG", "Erro ao salvar $tag", exc)
-                        Toast.makeText(
-                            this@ThirdActivity,
-                            "Erro ao salvar foto",
-                            Toast.LENGTH_SHORT
-                        ).show()
+                        Toast.makeText(this@ThirdActivity, "Erro ao salvar foto", Toast.LENGTH_SHORT).show()
                     }
                 }
             )
         } catch (e: Exception) {
-            Log.e("CAMERA_DEBUG", "Erro geral em $tag", e)
+            Log.e("CAMERA_DEBUG", "Erro geral ao tirar foto", e)
         }
     }
 

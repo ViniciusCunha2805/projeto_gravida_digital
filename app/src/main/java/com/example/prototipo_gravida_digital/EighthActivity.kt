@@ -33,13 +33,13 @@ class EighthActivity : AppCompatActivity() {
     private lateinit var cameraExecutor: ExecutorService
     private lateinit var sharedPref: SharedPreferences
     private var userId: Long = -1
-    private var idSecaoAtual: Int = 0 // Variável para armazenar o id_secao
+    private var idSecaoAtual: Int = 0
 
     // Componentes de UI
     private lateinit var seekBar: SeekBar
     private lateinit var btnProxima: Button
 
-    // Solicitação de permissão da câmera
+    // Permissão da câmera
     private val requestPermissionLauncher = registerForActivityResult(
         ActivityResultContracts.RequestPermission()
     ) { isGranted ->
@@ -52,22 +52,19 @@ class EighthActivity : AppCompatActivity() {
         enableEdgeToEdge()
         setContentView(R.layout.activity_eighth)
 
-        // Obtém o ID do usuário logado
+        // Carrega dados do usuário e da seção
         sharedPref = getSharedPreferences("app_prefs", Context.MODE_PRIVATE)
         userId = sharedPref.getLong("user_id", -1)
-
-        // Gera ou recupera o id_secao atual
-        idSecaoAtual = sharedPref.getInt("current_section_id", 0).also {
-            if (it == 0) {
-                // Se não existe, cria um novo
-                val newSectionId = System.currentTimeMillis().toInt()
-                sharedPref.edit().putInt("current_section_id", newSectionId).apply()
-                idSecaoAtual = newSectionId
-            }
-        }
+        idSecaoAtual = sharedPref.getInt("current_section_id", 0)
 
         if (userId == -1L) {
             Toast.makeText(this, "Usuário não identificado", Toast.LENGTH_SHORT).show()
+            finish()
+            return
+        }
+
+        if (idSecaoAtual == 0) {
+            Toast.makeText(this, "Erro: Sessão do questionário não iniciada", Toast.LENGTH_SHORT).show()
             finish()
             return
         }
@@ -78,20 +75,19 @@ class EighthActivity : AppCompatActivity() {
             insets
         }
 
-        // Inicialização dos componentes
+        // Inicialização dos componentes de UI
         seekBar = findViewById(R.id.seekBarResposta6)
         btnProxima = findViewById(R.id.btProxima6)
 
-        // Configuração do botão
         btnProxima.setOnClickListener {
             val resposta = seekBar.progress.coerceIn(0..3)
 
             DatabaseHelper(this).apply {
                 salvarResposta(
                     idUsuario = userId.toInt(),
-                    perguntaNum = 6, // Número da pergunta atual
+                    perguntaNum = 6,
                     valor = resposta,
-                    idSecao = idSecaoAtual // Inclui o id_secao
+                    idSecao = idSecaoAtual
                 )
                 close()
             }
@@ -99,7 +95,7 @@ class EighthActivity : AppCompatActivity() {
             startActivity(Intent(this, NinthActivity::class.java))
         }
 
-        // Configuração da câmera
+        // Inicia câmera ou pede permissão
         cameraExecutor = Executors.newSingleThreadExecutor()
 
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA)
@@ -164,7 +160,7 @@ class EighthActivity : AppCompatActivity() {
                                 idUsuario = userId.toInt(),
                                 activity = "EighthActivity",
                                 caminho = photoFile.absolutePath,
-                                idSecao = idSecaoAtual // Inclui o mesmo id_secao
+                                idSecao = idSecaoAtual
                             )
                             close()
                         }
