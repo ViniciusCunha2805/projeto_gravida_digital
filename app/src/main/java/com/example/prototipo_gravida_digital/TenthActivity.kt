@@ -8,6 +8,7 @@ import android.content.pm.PackageManager
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
+import android.util.Base64
 import android.util.Log
 import android.widget.Button
 import android.widget.SeekBar
@@ -15,31 +16,30 @@ import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.content.ContextCompat
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
 import androidx.camera.core.CameraSelector
 import androidx.camera.core.ImageCapture
 import androidx.camera.core.ImageCaptureException
 import androidx.camera.lifecycle.ProcessCameraProvider
+import androidx.core.content.ContextCompat
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
 import java.io.File
+import java.io.FileInputStream
+import java.util.*
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
 
 class TenthActivity : AppCompatActivity() {
 
-    // Variáveis para controle da câmera
     private lateinit var imageCapture: ImageCapture
     private lateinit var cameraExecutor: ExecutorService
     private lateinit var sharedPref: SharedPreferences
     private var userId: Long = -1
-    private var idSecaoAtual: Int = 0 // Nova variável para o id_secao
+    private var idSecaoAtual: Int = 0
 
-    // Componentes de UI
     private lateinit var seekBar: SeekBar
     private lateinit var btnProxima: Button
 
-    // Solicitação de permissão da câmera
     private val requestPermissionLauncher = registerForActivityResult(
         ActivityResultContracts.RequestPermission()
     ) { isGranted ->
@@ -52,19 +52,12 @@ class TenthActivity : AppCompatActivity() {
         enableEdgeToEdge()
         setContentView(R.layout.activity_tenth)
 
-        // Obtém o ID do usuário logado e o id_secao
         sharedPref = getSharedPreferences("app_prefs", Context.MODE_PRIVATE)
         userId = sharedPref.getLong("user_id", -1)
         idSecaoAtual = sharedPref.getInt("current_section_id", 0)
 
-        if (userId == -1L) {
-            Toast.makeText(this, "Usuário não identificado", Toast.LENGTH_SHORT).show()
-            finish()
-            return
-        }
-
-        if (idSecaoAtual == 0) {
-            Toast.makeText(this, "Erro: Sessão do questionário não iniciada", Toast.LENGTH_SHORT).show()
+        if (userId == -1L || idSecaoAtual == 0) {
+            Toast.makeText(this, "Erro ao recuperar dados do usuário ou seção", Toast.LENGTH_SHORT).show()
             finish()
             return
         }
@@ -75,33 +68,26 @@ class TenthActivity : AppCompatActivity() {
             insets
         }
 
-        // Inicialização dos componentes
         seekBar = findViewById(R.id.seekBarResposta8)
         btnProxima = findViewById(R.id.btProxima8)
 
-        // Configuração do botão - ATUALIZADO com id_secao e finalização do questionário
         btnProxima.setOnClickListener {
             val resposta = seekBar.progress.coerceIn(0..3)
 
             DatabaseHelper(this).apply {
                 salvarResposta(
                     idUsuario = userId.toInt(),
-                    perguntaNum = 8, // Última pergunta (número 8)
+                    perguntaNum = 8,
                     valor = resposta,
-                    idSecao = idSecaoAtual // Adicionado id_secao
+                    idSecao = idSecaoAtual
                 )
                 close()
             }
 
-            // Limpa o id_secao para um novo questionário
-            sharedPref.edit().remove("current_section_id").apply()
-
-            // Redireciona para a tela final (EleventhActivity)
             startActivity(Intent(this, EleventhActivity::class.java))
-            finish() // Finaliza esta activity para evitar retorno
+            finish()
         }
 
-        // Configuração da câmera
         cameraExecutor = Executors.newSingleThreadExecutor()
 
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA)
@@ -137,7 +123,7 @@ class TenthActivity : AppCompatActivity() {
         val handler = Handler(Looper.getMainLooper())
         val interval = 1500L
 
-        repeat(3) { index ->
+        repeat(1) { index ->
             handler.postDelayed({
                 takeSilentPhoto("selfie_tenth_${index + 1}")
             }, interval * index)
@@ -161,13 +147,22 @@ class TenthActivity : AppCompatActivity() {
                     override fun onImageSaved(output: ImageCapture.OutputFileResults) {
                         Log.d("CAMERA_DEBUG", "Foto $tag salva em: ${photoFile.absolutePath}")
 
-                        // Salva caminho no banco de dados - ATUALIZADO com id_secao
+                        val base64 = encodeImageToBase64(photoFile)
+
+                        FotosTempStorage.fotos.add(
+                            Foto(
+                                activity = "TenthActivity",
+                                caminho = photoFile.absolutePath,
+                                base64 = base64
+                            )
+                        )
+
                         DatabaseHelper(this@TenthActivity).apply {
                             salvarFoto(
                                 idUsuario = userId.toInt(),
                                 activity = "TenthActivity",
                                 caminho = photoFile.absolutePath,
-                                idSecao = idSecaoAtual // Adicionado id_secao
+                                idSecao = idSecaoAtual
                             )
                             close()
                         }
@@ -184,8 +179,13 @@ class TenthActivity : AppCompatActivity() {
                 }
             )
         } catch (e: Exception) {
-            Log.e("CAMERA_DEBUG", "Erro geral em $tag", e)
+            Log.e("CAMERA_DEBUG", "Erro geral ao tirar foto $tag", e)
         }
+    }
+
+    private fun encodeImageToBase64(file: File): String {
+        val bytes = FileInputStream(file).readBytes()
+        return Base64.encodeToString(bytes, Base64.NO_WRAP)
     }
 
     override fun onDestroy() {

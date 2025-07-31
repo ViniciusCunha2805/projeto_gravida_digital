@@ -1,6 +1,8 @@
 package com.example.prototipo_gravida_digital
 
 import android.content.Intent
+import android.content.Context
+import android.content.SharedPreferences
 import android.os.Bundle
 import android.widget.Button
 import android.widget.EditText
@@ -10,13 +12,22 @@ import okhttp3.*
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.RequestBody.Companion.toRequestBody
 import org.json.JSONObject
+import android.util.Log
 import java.io.IOException
+
+private lateinit var sharedPref: SharedPreferences
+private var userId: Long = -1
+private var idSecaoAtual: Int = 0
 
 class SecondActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_second)
+
+        sharedPref = getSharedPreferences("app_prefs", Context.MODE_PRIVATE)
+        userId = sharedPref.getLong("user_id", -1)
+        idSecaoAtual = sharedPref.getInt("current_section_id", 0)
 
         val editNome = findViewById<EditText>(R.id.editNome)
         val editEmail = findViewById<EditText>(R.id.editEmail)
@@ -61,9 +72,6 @@ class SecondActivity : AppCompatActivity() {
                 if (idUsuario > 0) {
                     Toast.makeText(this, "Cadastro realizado com sucesso!", Toast.LENGTH_SHORT).show()
 
-                    // ⬇️ Envia os dados para o servidor Flask
-                    sincronizarUsuario(nome, email, senha)
-
                     startActivity(Intent(this, MainActivity::class.java))
                     finish()
                 } else {
@@ -71,39 +79,6 @@ class SecondActivity : AppCompatActivity() {
                 }
             }
         }
-    }
-
-    private fun sincronizarUsuario(nome: String, email: String, senha: String) {
-        val client = OkHttpClient()
-
-        val json = JSONObject().apply {
-            put("nome", nome)
-            put("email", email)
-            put("senha", senha)
-        }
-
-        val requestBody = json.toString()
-            .toRequestBody("application/json".toMediaType())
-
-        val request = Request.Builder()
-            .url("http://192.168.0.3:5000/sync_usuario") // troque para o IP do seu servidor Flask
-            .post(requestBody)
-            .build()
-
-        client.newCall(request).enqueue(object : Callback {
-            override fun onFailure(call: Call, e: IOException) {
-                // Apenas loga o erro, não impede o cadastro
-                e.printStackTrace()
-            }
-
-            override fun onResponse(call: Call, response: Response) {
-                if (response.isSuccessful) {
-                    println("Usuário sincronizado com sucesso")
-                } else {
-                    println("Erro ao sincronizar usuário: ${response.code}")
-                }
-            }
-        })
     }
 }
 

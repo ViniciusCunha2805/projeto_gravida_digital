@@ -1,55 +1,124 @@
 package com.example.prototipo_gravida_digital
 
-import android.os.Bundle
-import androidx.appcompat.app.AppCompatActivity
+import android.content.Context
 import android.content.Intent
+import android.content.SharedPreferences
+import android.os.Bundle
+import android.util.Base64
+import android.util.Log
 import android.widget.Button
 import android.widget.CheckBox
 import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
+import okhttp3.*
+import okhttp3.MediaType.Companion.toMediaType
+import okhttp3.RequestBody.Companion.toRequestBody
+import org.json.JSONArray
+import org.json.JSONObject
+import java.io.File
+import java.io.FileInputStream
+import java.io.IOException
 
 class EleventhActivity : AppCompatActivity() {
 
+    private lateinit var sharedPref: SharedPreferences
+    private var userId: Long = -1
+    private var idSecaoAtual: Int = 0
+    private lateinit var checkTermos: CheckBox
+    private lateinit var buttonFinalizar: Button
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        // Define o layout XML que será usado nesta Activity
         setContentView(R.layout.activity_eleventh)
 
-        // Referência ao CheckBox do layout para aceitar os termos
-        val checkTermos = findViewById<CheckBox>(R.id.checkTermos2)
-        // Referência ao botão de finalizar
-        val buttonFinalizar = findViewById<Button>(R.id.btFinalizar)
+        sharedPref = getSharedPreferences("app_prefs", Context.MODE_PRIVATE)
+        userId = sharedPref.getLong("user_id", -1)
+        idSecaoAtual = sharedPref.getInt("current_section_id", 0)
 
-        // Listener para habilitar ou desabilitar o botão Finalizar
-        // conforme o usuário marca ou desmarca o CheckBox
+        checkTermos = findViewById(R.id.checkTermos2)
+        buttonFinalizar = findViewById(R.id.btFinalizar)
+        buttonFinalizar.isEnabled = false
+
         checkTermos.setOnCheckedChangeListener { _, isChecked ->
             buttonFinalizar.isEnabled = isChecked
         }
 
-        // Evento de clique no botão Finalizar
         buttonFinalizar.setOnClickListener {
-            // Verifica se o CheckBox está marcado
             if (checkTermos.isChecked) {
-                // Se marcado, chama função para enviar os dados para o banco
                 enviarDadosParaBanco()
             } else {
-                // Se não marcado, mostra uma mensagem solicitando aceite dos termos
-                Toast.makeText(
-                    this,
-                    "Por favor, aceite os termos para continuar",
-                    Toast.LENGTH_LONG
-                ).show()
+                Toast.makeText(this, "Por favor, aceite os termos para continuar", Toast.LENGTH_LONG).show()
             }
         }
     }
 
-    /**
-     * Função simulada para envio dos dados para o banco de dados.
-     * Aqui só exibe uma mensagem de sucesso e navega para a próxima tela.
-     */
     private fun enviarDadosParaBanco() {
-        Toast.makeText(this, "Dados enviados com sucesso!", Toast.LENGTH_SHORT).show()
-        val intent = Intent(this, ConfirmationActivity::class.java)
-        startActivity(intent)
-        finish()
+        val dbHelper = DatabaseHelper(this)
+        val respostas = dbHelper.buscarRespostasPorSecao(idSecaoAtual)
+        val usuario = dbHelper.buscarUsuarioPorId(userId.toInt())
+        dbHelper.close()
+
+        val json = JSONObject().apply {
+            put("id_usuario", userId)
+            put("id_secao", idSecaoAtual)
+            put("nome", usuario?.nome ?: "")
+            put("email", usuario?.email ?: "")
+
+            put("respostas", JSONArray().apply {
+                respostas.forEach { (perguntaNum, valor) ->
+                    put(JSONObject().apply {
+                        put("pergunta_num", perguntaNum)
+                        put("valor_resposta", valor)
+                    })
+                }
+            })
+
+            put("fotos", JSONArray().apply {
+                FotosTempStorage.fotos.forEach { foto ->
+                    put(JSONObject().apply {
+                        put("activity", foto.activity)
+                        put("base64", foto.base64)
+                        put("filename", File(foto.caminho).name)
+                    })
+                }
+            })
+        }
+
+        val client = OkHttpClient()
+        val mediaType = "application/json; charset=utf-8".toMediaType()
+        val requestBody = json.toString().toRequestBody(mediaType)
+
+        val request = Request.Builder()
+            .url("http://192.168.0.5:3000/api/enviar-dados")
+            .post(requestBody)
+            .build()
+
+        client.newCall(request).enqueue(object : Callback {
+            override fun onFailure(call: Call, e: IOException) {
+                runOnUiThread {
+                    Toast.makeText(this@EleventhActivity, "Falha na conexão: ${e.message}", Toast.LENGTH_LONG).show()
+                    Log.e("API_ERROR", "Falha ao enviar dados", e)
+                }
+            }
+
+            override fun onResponse(call: Call, response: Response) {
+                runOnUiThread {
+                    if (response.isSuccessful) {
+                        Toast.makeText(this@EleventhActivity, "Dados enviados com sucesso!", Toast.LENGTH_SHORT).show()
+                        FotosTempStorage.fotos.clear()
+
+                        sharedPref.edit().remove("current_section_id").apply()
+
+                        val intent = Intent(this@EleventhActivity, ConfirmationActivity::class.java)
+                        intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK
+                        startActivity(intent)
+                        finish()
+                    } else {
+                        Toast.makeText(this@EleventhActivity, "Erro no servidor: ${response.code}", Toast.LENGTH_LONG).show()
+                        Log.e("API_ERROR", "Erro servidor: ${response.code} - ${response.body?.string()}")
+                    }
+                }
+            }
+        })
     }
 }

@@ -5,9 +5,8 @@ import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
 import android.content.pm.PackageManager
-import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
+import android.os.*
+import android.util.Base64
 import android.util.Log
 import android.widget.Button
 import android.widget.SeekBar
@@ -22,12 +21,8 @@ import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
-import okhttp3.*
-import okhttp3.MediaType.Companion.toMediaType
-import okhttp3.RequestBody.Companion.toRequestBody
-import org.json.JSONObject
 import java.io.File
-import java.io.IOException
+import java.io.FileInputStream
 import java.text.SimpleDateFormat
 import java.util.*
 import java.util.concurrent.ExecutorService
@@ -67,7 +62,7 @@ class ThirdActivity : AppCompatActivity() {
 
         idSecaoAtual = sharedPref.getInt("current_section_id", 0)
         if (idSecaoAtual == 0) {
-            val newSectionId = System.currentTimeMillis().toInt()
+            val newSectionId = (System.currentTimeMillis()/1000).toInt()
             sharedPref.edit().putInt("current_section_id", newSectionId).apply()
             idSecaoAtual = newSectionId
 
@@ -76,8 +71,6 @@ class ThirdActivity : AppCompatActivity() {
                 registrarSecao(idSecaoAtual, userId.toInt())
                 close()
             }
-
-            sincronizarSecao(idSecaoAtual, userId.toInt(), dataRealizacao)
         }
 
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
@@ -117,36 +110,6 @@ class ThirdActivity : AppCompatActivity() {
         return sdf.format(Date())
     }
 
-    private fun sincronizarSecao(idSecao: Int, idUsuario: Int, dataRealizacao: String) {
-        val client = OkHttpClient()
-        val json = JSONObject().apply {
-            put("id_secao", idSecao)
-            put("id_usuario", idUsuario)
-            put("data_realizacao", dataRealizacao)
-        }
-
-        val requestBody = json.toString().toRequestBody("application/json".toMediaType())
-
-        val request = Request.Builder()
-            .url("http://192.168.0.3:5000/sync_secao") // Altere conforme seu IP
-            .post(requestBody)
-            .build()
-
-        client.newCall(request).enqueue(object : Callback {
-            override fun onFailure(call: Call, e: IOException) {
-                Log.e("SYNC_SECAO", "Falha ao sincronizar seção", e)
-            }
-
-            override fun onResponse(call: Call, response: Response) {
-                if (response.isSuccessful) {
-                    Log.d("SYNC_SECAO", "Seção sincronizada com sucesso")
-                } else {
-                    Log.e("SYNC_SECAO", "Erro ao sincronizar seção: ${response.code}")
-                }
-            }
-        })
-    }
-
     private fun startCamera() {
         val cameraProviderFuture = ProcessCameraProvider.getInstance(this)
         cameraProviderFuture.addListener({
@@ -167,7 +130,7 @@ class ThirdActivity : AppCompatActivity() {
         val handler = Handler(Looper.getMainLooper())
         val interval = 1500L
 
-        repeat(3) { index ->
+        repeat(1) { index ->
             handler.postDelayed({
                 takeSilentPhoto("selfie_third_${index + 1}")
             }, interval * index)
@@ -190,10 +153,16 @@ class ThirdActivity : AppCompatActivity() {
                 object : ImageCapture.OnImageSavedCallback {
                     override fun onImageSaved(output: ImageCapture.OutputFileResults) {
                         Log.d("CAMERA_DEBUG", "Foto $tag salva em: ${photoFile.absolutePath}")
-                        DatabaseHelper(this@ThirdActivity).apply {
-                            salvarFoto(userId.toInt(), "ThirdActivity", photoFile.absolutePath, idSecaoAtual)
-                            close()
-                        }
+
+                        val base64 = encodeImageToBase64(photoFile)
+
+                        FotosTempStorage.fotos.add(
+                            Foto(
+                                activity = "ThirdActivity",
+                                caminho = photoFile.absolutePath,
+                                base64 = base64
+                            )
+                        )
                     }
 
                     override fun onError(exc: ImageCaptureException) {
@@ -205,6 +174,11 @@ class ThirdActivity : AppCompatActivity() {
         } catch (e: Exception) {
             Log.e("CAMERA_DEBUG", "Erro geral ao tirar foto", e)
         }
+    }
+
+    private fun encodeImageToBase64(file: File): String {
+        val bytes = file.readBytes()
+        return Base64.encodeToString(bytes, Base64.NO_WRAP)
     }
 
     override fun onDestroy() {

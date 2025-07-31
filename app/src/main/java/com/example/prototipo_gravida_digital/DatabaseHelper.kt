@@ -147,6 +147,24 @@ class DatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME
         return respostas
     }
 
+    fun buscarUsuarioPorId(id: Int): Usuario? {
+        val db = readableDatabase
+        val cursor = db.rawQuery(
+            "SELECT $COLUMN_NOME, $COLUMN_EMAIL FROM $TABLE_USUARIOS WHERE $COLUMN_ID = ?",
+            arrayOf(id.toString())
+        )
+
+        return if (cursor.moveToFirst()) {
+            val nome = cursor.getString(0)
+            val email = cursor.getString(1)
+            cursor.close()
+            Usuario(id, nome, email)
+        } else {
+            cursor.close()
+            null
+        }
+    }
+
     fun buscarRespostasPorSecao(idSecao: Int): Map<Int, Int> {
         val respostas = mutableMapOf<Int, Int>()
         val db = readableDatabase
