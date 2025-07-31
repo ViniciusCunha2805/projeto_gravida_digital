@@ -8,12 +8,6 @@ import android.widget.Button
 import android.widget.EditText
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import okhttp3.*
-import okhttp3.MediaType.Companion.toMediaType
-import okhttp3.RequestBody.Companion.toRequestBody
-import org.json.JSONObject
-import android.util.Log
-import java.io.IOException
 
 private lateinit var sharedPref: SharedPreferences
 private var userId: Long = -1
@@ -35,6 +29,7 @@ class SecondActivity : AppCompatActivity() {
         val editConfirmaSenha = findViewById<EditText>(R.id.editConfirmaSenha)
         val btnCadastrar = findViewById<Button>(R.id.btCadastrar2)
 
+        //Validações de cadastro
         btnCadastrar.setOnClickListener {
             val nome = editNome.text.toString().trim()
             val email = editEmail.text.toString().trim()

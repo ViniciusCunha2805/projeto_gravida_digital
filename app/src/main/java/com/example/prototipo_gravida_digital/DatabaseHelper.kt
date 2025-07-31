@@ -1,5 +1,6 @@
 package com.example.prototipo_gravida_digital
 
+// Importações necessárias para manipulação de banco SQLite, contexto, datas e logs
 import android.content.ContentValues
 import android.content.Context
 import android.database.sqlite.SQLiteDatabase
@@ -8,20 +9,21 @@ import android.util.Log
 import java.text.SimpleDateFormat
 import java.util.*
 
+// Classe responsável por gerenciar o banco de dados SQLite local
 class DatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME, null, DATABASE_VERSION), AutoCloseable {
 
     companion object {
-        private const val DATABASE_NAME = "gravida_digital.db"
-        private const val DATABASE_VERSION = 3
+        private const val DATABASE_NAME = "gravida_digital.db" // Nome do arquivo do banco
+        private const val DATABASE_VERSION = 3 // Versão do banco para controle de upgrade
 
-        // Tabela de usuários
+        // Nomes e colunas da tabela de usuários
         const val TABLE_USUARIOS = "usuarios"
         const val COLUMN_ID = "id"
         const val COLUMN_NOME = "nome"
         const val COLUMN_EMAIL = "email"
         const val COLUMN_SENHA = "senha"
 
-        // Tabela de respostas
+        // Nomes e colunas da tabela de respostas
         const val TABLE_RESPOSTAS = "respostas"
         const val COLUMN_ID_RESPOSTA = "id_resposta"
         const val COLUMN_ID_USUARIO = "id_usuario"
@@ -30,18 +32,19 @@ class DatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME
         const val COLUMN_VALOR_RESPOSTA = "valor_resposta"
         const val COLUMN_ID_SECAO = "id_secao"
 
-        // Tabela de fotos
+        // Nomes e colunas da tabela de fotos
         const val TABLE_FOTOS = "fotos"
         const val COLUMN_ID_FOTO = "id_foto"
         const val COLUMN_ACTIVITY = "activity"
         const val COLUMN_CAMINHO = "caminho"
         const val COLUMN_ID_SECAO_FOTO = "id_secao"
 
-        // Tabela de seções
+        // Nomes e colunas da tabela de seções
         const val TABLE_SECOES = "secoes"
         const val COLUMN_DATA_REALIZACAO = "data_realizacao"
     }
 
+    // Criação das tabelas ao inicializar o banco
     override fun onCreate(db: SQLiteDatabase) {
         db.execSQL("""
             CREATE TABLE $TABLE_USUARIOS (
@@ -82,6 +85,7 @@ class DatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME
         """)
     }
 
+    // Atualização do banco (apaga tudo e recria)
     override fun onUpgrade(db: SQLiteDatabase, oldVersion: Int, newVersion: Int) {
         db.execSQL("DROP TABLE IF EXISTS $TABLE_FOTOS")
         db.execSQL("DROP TABLE IF EXISTS $TABLE_RESPOSTAS")
@@ -90,7 +94,7 @@ class DatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME
         onCreate(db)
     }
 
-    // === USUÁRIOS ===
+    // Insere novo usuário na tabela
     fun cadastrarUsuario(nome: String, email: String, senha: String): Long {
         val db = writableDatabase
         val values = ContentValues().apply {
@@ -101,6 +105,7 @@ class DatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME
         return db.insert(TABLE_USUARIOS, null, values)
     }
 
+    // Verifica se existe usuário com email e senha correspondentes (login)
     fun verificarLogin(email: String, senha: String): Long {
         val db = readableDatabase
         val cursor = db.rawQuery("""
@@ -110,6 +115,7 @@ class DatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME
         return cursor.use { if (it.moveToFirst()) it.getLong(0) else -1L }
     }
 
+    // Verifica se já existe usuário com o email fornecido
     fun verificarEmailExistente(email: String): Boolean {
         val db = readableDatabase
         val cursor = db.rawQuery("""
@@ -119,7 +125,7 @@ class DatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME
         return cursor.use { it.count > 0 }
     }
 
-    // === RESPOSTAS ===
+    // Salva a resposta de uma pergunta no banco
     fun salvarResposta(idUsuario: Int, perguntaNum: Int, valor: Int, idSecao: Int): Long {
         val db = writableDatabase
         val values = ContentValues().apply {
@@ -131,22 +137,7 @@ class DatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME
         return db.insert(TABLE_RESPOSTAS, null, values)
     }
 
-    fun buscarRespostas(idUsuario: Int): Map<Int, Int> {
-        val respostas = mutableMapOf<Int, Int>()
-        val db = readableDatabase
-        val cursor = db.rawQuery("""
-            SELECT $COLUMN_PERGUNTA_NUM, $COLUMN_VALOR_RESPOSTA 
-            FROM $TABLE_RESPOSTAS 
-            WHERE $COLUMN_ID_USUARIO = ?
-        """, arrayOf(idUsuario.toString()))
-
-        while (cursor.moveToNext()) {
-            respostas[cursor.getInt(0)] = cursor.getInt(1)
-        }
-        cursor.close()
-        return respostas
-    }
-
+    // Retorna objeto Usuario a partir do ID (ou null se não encontrado)
     fun buscarUsuarioPorId(id: Int): Usuario? {
         val db = readableDatabase
         val cursor = db.rawQuery(
@@ -165,6 +156,7 @@ class DatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME
         }
     }
 
+    // Busca todas as respostas associadas a uma seção e retorna em formato de mapa
     fun buscarRespostasPorSecao(idSecao: Int): Map<Int, Int> {
         val respostas = mutableMapOf<Int, Int>()
         val db = readableDatabase
@@ -181,7 +173,7 @@ class DatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME
         return respostas
     }
 
-    // === FOTOS ===
+    // Salva metadados de uma foto no banco
     fun salvarFoto(idUsuario: Int, activity: String, caminho: String, idSecao: Int): Long {
         val db = writableDatabase
         val values = ContentValues().apply {
@@ -193,23 +185,7 @@ class DatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME
         return db.insert(TABLE_FOTOS, null, values)
     }
 
-    fun buscarFotosPorSecao(idSecao: Int): List<Pair<String, String>> {
-        val fotos = mutableListOf<Pair<String, String>>()
-        val db = readableDatabase
-        val cursor = db.rawQuery("""
-            SELECT $COLUMN_ACTIVITY, $COLUMN_CAMINHO 
-            FROM $TABLE_FOTOS 
-            WHERE $COLUMN_ID_SECAO_FOTO = ?
-        """, arrayOf(idSecao.toString()))
-
-        while (cursor.moveToNext()) {
-            fotos.add(Pair(cursor.getString(0), cursor.getString(1)))
-        }
-        cursor.close()
-        return fotos
-    }
-
-    // === SEÇÕES ===
+    // Registra nova seção com data/hora atual
     fun registrarSecao(idSecao: Int, idUsuario: Int): Long {
         val db = writableDatabase
         val sdf = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault())
@@ -225,6 +201,7 @@ class DatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME
         return db.insert(TABLE_SECOES, null, values)
     }
 
+    // Fecha o banco (por causa do AutoCloseable)
     override fun close() {
         super.close()
     }

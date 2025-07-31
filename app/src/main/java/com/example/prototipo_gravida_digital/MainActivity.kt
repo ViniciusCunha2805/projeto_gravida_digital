@@ -30,7 +30,6 @@ class MainActivity : AppCompatActivity() {
         val btnEntrar = findViewById<Button>(R.id.btEntrar)
         val btnCadastrar = findViewById<Button>(R.id.btCadastrar)
 
-        // Em MainActivity.onCreate()
         sharedPref.edit().remove("current_section_id").apply()
 
 
